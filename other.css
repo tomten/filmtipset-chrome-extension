@@ -1,0 +1,17 @@
+﻿#filmtipsetImdbLinks 
+{
+	/* background-image: url(' + chrome.extension.getURL("remsa.png") + '); */
+	z-index: 12345;
+	left: 100px;
+	top: 100px;
+	position: fixed;
+	height: 31px;
+	width: 200px;
+	margin-top: 0px;
+	padding-top: 10px;
+	border: 2px solid black;
+	padding-left: 5px;
+	padding-right: 5px;
+	font-family: sans-serif;
+	font-size: 15px;
+}

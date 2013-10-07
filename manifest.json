@@ -1,0 +1,80 @@
+{
+    "manifest_version": 2,
+    "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+    "name": "__MSG_extensionName__",
+    "short_name": "__MSG_extensionShortName__",
+    "version": "2.2",
+    "web_accessible_resources": [  
+        "cache.js",
+        "common.js",
+        "filmtipset.js",
+        "filmtipsetApi.js",
+        "imdb.js",
+        "jquery-1.10.2.min.js",
+        "jquery.regex.js",
+        "jquery.tipTip.minified.js",
+        "other.js",
+        "remsa.png",
+        "images/grade/1grade.png",
+        "images/grade/1gradeactive.png",
+        "images/grade/2grade.png",
+        "images/grade/2gradeactive.png",
+        "images/grade/3grade.png",
+        "images/grade/3gradeactive.png",
+        "images/grade/4grade.png",
+        "images/grade/4gradeactive.png",
+        "images/grade/5grade.png",
+        "images/grade/5gradeactive.png",
+        "images/grade/nograde.png",
+        "images/pageactions/1calculated.png",
+        "images/pageactions/1seen.png",
+        "images/pageactions/2calculated.png",
+        "images/pageactions/2seen.png",
+        "images/pageactions/3calculated.png",
+        "images/pageactions/3seen.png",
+        "images/pageactions/4calculated.png",
+        "images/pageactions/4seen.png",
+        "images/pageactions/5calculated.png",
+        "images/pageactions/5seen.png",
+        "images/pageactions/disabled.png",
+        "images/pageactions/unknown.png"
+    ],
+    "description": "__MSG_extensionDescription__",
+    "default_locale": "sv",
+    "icons": { 
+        "48": "images/icons/48.png",
+        "128": "images/icons/128.png" 
+    },
+    "background": { "page": "filmtipset.html" },
+    "page_action": {
+        "default_icon": "images/pageactions/unknown.png",
+        "default_popup": "grade.html"
+    },
+    "options_page": "personal.html",
+    "content_scripts": [
+        {
+            "matches": [ "http://*.imdb.com/title*" ],
+            "js": [ 
+                "common.js",
+                "imdb.js"
+            ],
+            "run_at": "document_start"
+        },
+        {
+            "matches": [ "http://*/*", "https://*/*" ],
+            "css": [ "other.css", "tipTip.css" ],
+            "js": [ 
+                "jquery-1.10.2.min.js",
+                "jquery.regex.js", 
+                "jquery.tipTip.minified.js", 
+                "common.js", 
+                "other.js"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "permissions": [ 
+        "tabs",
+        "http://www.filmtipset.se/api/*" 
+    ]
+}
