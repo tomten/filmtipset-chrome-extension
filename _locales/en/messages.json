@@ -1,0 +1,13 @@
+{
+	"extensionName": { "message": "Filmtipset" },
+	"extensionShortName": { "message": "Filmtipset" },
+	"extensionDescription": { "message": "Grades and suggestions from Filmtipset everywhere on the web!" },
+	"save": { "message": "Save" },
+	"pageActionTitleSeen": { "message": "You've graded this movie %grade%." },
+	"pageActionTitleCalculated": { "message": "You'll grade this movie %grade%." },
+	"pageActionTitleUnavailable": { "message": "Filmtipset doesn't know this movie." },
+	"pageActionTitleUnknown": { "message": "Filmtipset doesn't know whether you'll like this movie." },
+	"welcomeHtml": { "message": "<h1>Welcome!</h1>To use this extension <b>you have to <a target='filmtipset' href='http://www.filmtipset.se/api.cgi?keys=1'>create a personal user key on Filmtipset</a></b> in order to get recommendations and grade movies. Then enter this user key below. The key should be created for <b>pbolmsteds Chrome extension</b>." },
+	"accessKeyLabel": { "message": "Access key" },
+	"userKeyLabel": { "message": "User key" }
+}

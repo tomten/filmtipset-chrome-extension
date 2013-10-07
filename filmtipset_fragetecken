@@ -1,0 +1,40 @@
+[
+    {
+        "request": {
+            "action": "imdb",
+            "id": "0034754"
+        },
+        "source": "filmtipset.se",
+        "user": {
+            "name": "pbolmstedt",
+            "id": "33362"
+        },
+        "data": [
+            {
+                "movie": {
+                    "country": "USA",
+                    "imdb": "0034754",
+                    "grade": {
+                        "value": null,
+                        "type": "none"
+                    },
+                    "name": "Freckles Comes Home",
+                    "description": "Freckles är på väg hem från college. På bussen träffar han en gangster som gömmer sig från polisen. Gangstern inser hur bra den lilla hemstaden är att gömma sig i men krånglar till det hela när han inser hur lättlurade invånarna är.",
+                    "filmtipsetgrade": {
+                        "value": null
+                    },
+                    "image": "http://images.filmtipset.se/posters/83827.jpg",
+                    "director": "Jean Yarbrough",
+                    "writer": "Gene Stratton-Porter, Edmond Kelso",
+                    "length": "63",
+                    "url": "http://www.filmtipset.se/film/freckles-comes-home.html",
+                    "orgname": "Freckles Comes Home",
+                    "id": "83827",
+                    "year": "1942",
+                    "actors": "Johnny Downs, Gale Storm, Mantan Moreland, Irving Bacon"
+                }
+            }
+        ],
+        "access-user": "pbolmsteds Chrome extension"
+    }
+]
