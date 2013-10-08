@@ -172,9 +172,6 @@ FilmtipsetApi.prototype.xmlHttpRequest = function(
         json, 
         logger
         ) {
-    if (logger) {
-        logger("FilmtipsetAPI.XHR: " + url);
-        }
     var req = new XMLHttpRequest();
     req.onload = function() {
         if (req.readyState === 4) {
