@@ -1,10 +1,34 @@
 ﻿"use strict";
 
-// constructor
+/**
+ * @constructor
+ * @param {object} jQuery Reference to jQuery. Used for DOM manipulation.
+ */
 function Popup(jQuery){
     this.jQuery = jQuery;
     }
 
+/**
+ * Returns true if any element in the array matches the supplied predicate function.
+ * @param {function} comparer Predicate function for matching an element.
+ * @return {boolean} True if any element in the array matches the supplied predicate function.
+ */
+ Array.prototype.any = function(comparer){
+    var result = false;
+    var self = this;
+    for (var elementIndex in self) {
+        var element = self[elementIndex];
+        var match = comparer(element);
+        if (match)
+            return true;
+        }
+    return false;
+    };
+    
+/**
+ * Draws the buttons in the popup.
+ * @param {tab} Active tab.
+ */
 Popup.prototype.showGradeButtons = function(tab) {
     var backgroundPage = chrome.extension.getBackgroundPage(); // HACK
     var currentGradeInfo = backgroundPage.filmtipset.gradeForTab["tab" + tab.id];
@@ -33,13 +57,10 @@ Popup.prototype.showGradeButtons = function(tab) {
             });
         }
         var wants = false;
-        if (backgroundPage.filmtipset.wantedList) {
-            for (var wantedMovie in backgroundPage.filmtipset.wantedList) {
-                var wantedImdb = backgroundPage.filmtipset.wantedList[wantedMovie].movie.id;
-                if (wantedImdb == currentGradeInfo.id) 
-                    wants = true; // TODO: better "find element in array" mechanism?
-                    }
-            }
+        if (backgroundPage.filmtipset.wantedList) 
+            wants = backgroundPage.filmtipset
+                .wantedList
+                .any(function(movie){ return currentGradeInfo.id == movie.movie.id; });
         if (!wants) {
             var wantedDiv = this.jQuery('<div id="want" class="i18n voteimage want"></div>');
             this.jQuery("#vote").append(wantedDiv);
