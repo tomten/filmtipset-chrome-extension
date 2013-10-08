@@ -6,23 +6,16 @@ function Filmtipset(){
 	this.gradeForTab = {};
 	this.wantedList = undefined;
 	}
-
+	
 Filmtipset.prototype.initAnalytics = function(){
-	var _gaq = _gaq || [];
-	_gaq.push(['_setAccount', 'UA-285667-8']);
+	_gaq.push(['_setAccount', 'UA-285667-8']); // Same account as released extension in Chrome Web Store
 	_gaq.push(['_trackPageview']);
-
 	var ga = document.createElement('script');
 	ga.type = 'text/javascript';
 	ga.async = true;
 	ga.src = 'https://ssl.google-analytics.com/ga.js';
 	var s = document.getElementsByTagName('script')[0];
-	if (s) {
-		s.parentNode.insertBefore(ga, s);
-		}
-	else {
-		console.log("no script node: no ga");
-		}
+	s.parentNode.insertBefore(ga, s);
 	};
 
 Filmtipset.prototype.track = function(
@@ -68,7 +61,12 @@ Filmtipset.prototype.activateImdbPage = function(
 		tabId, 
 		imdbId
 		) {
-    var film = new FilmtipsetApi(localStorage.accessKey, localStorage.userKey, this.cache, this.log);
+    var film = new FilmtipsetApi(
+		localStorage.accessKey, 
+		localStorage.userKey, 
+		this.cache, 
+		this.log
+		);
 	var tips = this;
     film.getInfoForImdbId(
         imdbId,
@@ -122,11 +120,12 @@ Filmtipset.prototype.initRequestListener = function(){
 						});
 					}
 				);
-			} // else if { 
-		} // function(){
-	); // addlistener(        
-	}; // function(){
+			} 
+		} 
+	); 
+	}; 
 	
+var _gaq = _gaq || []; // global variable for Google Analytics
 var filmtipset = new Filmtipset();
 filmtipset.initAnalytics();
 filmtipset.initLocalStorage();
