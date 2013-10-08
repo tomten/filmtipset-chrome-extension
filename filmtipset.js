@@ -8,8 +8,8 @@ function Filmtipset(){
 	}
 	
 Filmtipset.prototype.initAnalytics = function(){
-	_gaq.push(['_setAccount', 'UA-285667-8']); // Same account as released extension in Chrome Web Store
-	_gaq.push(['_trackPageview']);
+	window._gaq.push(['_setAccount', 'UA-285667-8']); // Same account as released extension in Chrome Web Store
+	window._gaq.push(['_trackPageview']);
 	var ga = document.createElement('script');
 	ga.type = 'text/javascript';
 	ga.async = true;
