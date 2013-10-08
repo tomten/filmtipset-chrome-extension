@@ -35,9 +35,9 @@ Popup.prototype.showGradeButtons = function(tab) {
 		var wants = false;
 		if (backgroundPage.filmtipset.wantedList) {
 			for (var wantedMovie in backgroundPage.filmtipset.wantedList) {
-				var wantedImdb = wantedMovie.data[0].movies[0].movie.id;
+				var wantedImdb = backgroundPage.filmtipset.wantedList[wantedMovie].movie.id;
 				if (wantedImdb == currentGradeInfo.id) 
-					wants = true;
+					wants = true; // TODO: better "find element in array" mechanism?
 					}
 			}
 		if (!wants) {
