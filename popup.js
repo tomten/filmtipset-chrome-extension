@@ -41,7 +41,7 @@ Popup.prototype.showGradeButtons = function(tab) {
 					}
 			}
 		if (!wants) {
-			var wantedDiv = this.jQuery('<div class="voteimage want">Vill se</div>');
+			var wantedDiv = this.jQuery('<div id="want" class="voteimage want">Vill se</div>');
 			this.jQuery("#vote").append(wantedDiv);
 			wantedDiv.click(function(){ 
                 popup.want(); 
@@ -50,7 +50,7 @@ Popup.prototype.showGradeButtons = function(tab) {
                 });
 			}
 		}
-		var filmtipsetDiv = this.jQuery('<div class="voteimage filmtipset">Filmtipset</div>');
+		var filmtipsetDiv = this.jQuery('<div id="filmtipsetpage" class="voteimage filmtipset">Filmtipset</div>');
 		filmtipsetDiv.click(function(){
 			chrome.tabs.getSelected(
 				null, 
@@ -66,6 +66,16 @@ Popup.prototype.showGradeButtons = function(tab) {
 				);
 			});
 		this.jQuery("#vote").append(filmtipsetDiv);
+		var jQuery = this.jQuery;
+		this.jQuery(".i18n").each(
+			function () {
+				var $elm = jQuery(this);
+				var messageName = $elm.attr("id");
+				var html = chrome.i18n.getMessage(messageName);
+				$elm.html(html);
+				}
+		);
+
 	};
 
 Popup.prototype.voteFromDiv = function(div){

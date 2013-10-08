@@ -9,5 +9,7 @@
 	"pageActionTitleUnknown": { "message": "Filmtipset doesn't know whether you'll like this movie." },
 	"welcomeHtml": { "message": "<h1>Welcome!</h1>To use this extension <b>you have to <a target='filmtipset' href='http://www.filmtipset.se/api.cgi?keys=1'>create a personal user key on Filmtipset</a></b> in order to get recommendations and grade movies. Then enter this user key below. The key should be created for <b>pbolmsteds Chrome extension</b>." },
 	"accessKeyLabel": { "message": "Access key" },
-	"userKeyLabel": { "message": "User key" }
+	"userKeyLabel": { "message": "User key" },
+	"want": { "message": "Want to see" },
+	"filmtipsetpage": { "message": "Filmtipset page" }
 }

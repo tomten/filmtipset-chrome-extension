@@ -9,5 +9,7 @@
 	"pageActionTitleUnknown": { "message": "Filmtipset vet inte vad du kommer tycka om denna film." },
 	"welcomeHtml": { "message": "<h1>Välkommen!</h1>För att använda detta tillägg <b>måste du <a target='filmtipset' href='http://www.filmtipset.se/api.cgi?keys=1'>skapa en personlig nyckel via Filmtipset</a></b> så att du kan få rekommendationer och sätta betyg. Fyll sedan i denna nyckel nedan. Nyckeln ska skapas för <b>pbolmsteds Chrome extension</b>" },
 	"accessKeyLabel": { "message": "Filmtipset API access key" },
-	"userKeyLabel": { "message": "Nyckel" }
+	"userKeyLabel": { "message": "Nyckel" },
+	"want": { "message": "Vill se" },
+	"filmtipsetpage": { "message": "Filmtipsetsida" }
 }
