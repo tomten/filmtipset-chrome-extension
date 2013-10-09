@@ -1,9 +1,13 @@
 "use strict";
 
-// constructor
-function Common(){}
+var FilmtipsetExtension = {};
 
-Common.prototype.getImdbIdFromUrl = function(url) {
+/**
+ * @constructor
+ */
+FilmtipsetExtension.Common = function (){}
+
+FilmtipsetExtension.Common.prototype.getImdbIdFromUrl = function(url) {
     var re = /\/tt(\d+)\D/i;
     var match = url.match(re);
     if (match) {
@@ -15,11 +19,11 @@ Common.prototype.getImdbIdFromUrl = function(url) {
     return null;
 };
 
-Common.prototype.log = function(message) {
+FilmtipsetExtension.Common.prototype.log = function(message) {
     chrome.extension.getBackgroundPage().log(message); 
 }; 
 
-Common.prototype.getIconFromGradeInfo = function(gradeInfo) {
+FilmtipsetExtension.Common.prototype.getIconFromGradeInfo = function(gradeInfo) {
     var iconUrl;
     if (!gradeInfo) {
         iconUrl = "images/pageactions/disabled.png";
@@ -37,7 +41,7 @@ Common.prototype.getIconFromGradeInfo = function(gradeInfo) {
     return iconUrl;
 };
 
-Common.prototype.getTitleFromGradeInfo = function(gradeInfo) {
+FilmtipsetExtension.Common.prototype.getTitleFromGradeInfo = function(gradeInfo) {
     var title;
     if (!gradeInfo) {
         title = chrome.i18n.getMessage("pageActionTitleUnavailable");

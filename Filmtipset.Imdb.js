@@ -1,12 +1,14 @@
 ﻿"use strict";
 
-// constructor
-function Imdb(href){
+/**
+ * @constructor
+ */
+FilmtipsetExtension.Imdb = function (href){
     this.href = href;
-    this.common = new Common();
+    this.common = new FilmtipsetExtension.Common();
     }
 
-Imdb.prototype.init = function(){
+FilmtipsetExtension.Imdb.prototype.init = function(){
     var imdbId = this.common.getImdbIdFromUrl(this.href);
     if (imdbId) {
         chrome.extension.sendRequest({ 
@@ -21,5 +23,5 @@ Imdb.prototype.init = function(){
         }
     };
 
-var imdb = new Imdb(window.location.href);
+var imdb = new FilmtipsetExtension.Imdb(window.location.href);
 imdb.init();

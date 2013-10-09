@@ -1,12 +1,14 @@
 ﻿"use strict";
 
-// constructor
-function Personal(jQuery){
+/**
+ * @constructor
+ */
+FilmtipsetExtension.Personal = function (jQuery){
     this.dirty = false;
     this.jQuery = jQuery;
     }
 
-Personal.prototype.init = function() {
+FilmtipsetExtension.Personal.prototype.init = function() {
     this.loadOptions();
     var p = this;
     this.jQuery(".saveoptions").click(function(){ 
@@ -28,7 +30,7 @@ Personal.prototype.init = function() {
         );
     };
 
-Personal.prototype.setDirty = function() {
+FilmtipsetExtension.Personal.prototype.setDirty = function() {
     console.log("setDirty; this=" + this);
     if (!this.dirty) {
         this.dirty = true;
@@ -36,7 +38,7 @@ Personal.prototype.setDirty = function() {
         }
     };
 
-Personal.prototype.loadOptions = function(){
+FilmtipsetExtension.Personal.prototype.loadOptions = function(){
     this.jQuery("#save").fadeOut("fast");
     var jQuery = this.jQuery;
     this.jQuery(".localStorage").each(
@@ -49,7 +51,7 @@ Personal.prototype.loadOptions = function(){
         this.dirty = false;
     };
 
-Personal.prototype.saveOptions = function() {
+FilmtipsetExtension.Personal.prototype.saveOptions = function() {
     var jQuery = this.jQuery;
     this.jQuery(".localStorage").each(
         function() {
@@ -63,5 +65,5 @@ Personal.prototype.saveOptions = function() {
         this.loadOptions();
     };
 
-var personal = new Personal($);
+var personal = new FilmtipsetExtension.Personal($);
 personal.init();

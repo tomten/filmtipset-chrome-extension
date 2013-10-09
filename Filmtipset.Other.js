@@ -1,28 +1,30 @@
-"use strict";
+ï»¿"use strict";
 
-// constructor
-function Other(jQuery){
+/**
+ * @constructor
+ */
+FilmtipsetExtension.Other = function (jQuery){
     this.maxFakeId = 0;
     this.jQuery = jQuery;
     }
 
-Other.image_html_template = '<img style="position:absolute;" width="20" height="20" src="%grade%" />';    
-Other.jquery_imdb_link_selector = 'a:regex(href,(www\\.)?imdb\\.(.+)\\/tt(\\d+))';    
-Other.popover_html_template = '<a style="float:right;" href="%url%"><img style="padding-left:10px;" src="%imgUrl%" /></a>%title%<br/><br/>%description%<br style="clear:both;" clear="both" />';
-Other.progress_html = 
-    '<div id="filmtipsetImdbLinks" style="background-image: url(%§aUrl%);">'+
+FilmtipsetExtension.Other.image_html_template = '<img style="position:absolute;" width="20" height="20" src="%grade%" />';    
+FilmtipsetExtension.Other.jquery_imdb_link_selector = 'a:regex(href,(www\\.)?imdb\\.(.+)\\/tt(\\d+))';    
+FilmtipsetExtension.Other.popover_html_template = '<a style="float:right;" href="%url%"><img style="padding-left:10px;" src="%imgUrl%" /></a>%title%<br/><br/>%description%<br style="clear:both;" clear="both" />';
+FilmtipsetExtension.Other.progress_html = 
+    '<div id="filmtipsetImdbLinks" style="background-image: url(%remsaUrl%);">'+
         'Processing '+
         '<span id="filmLinkCount">'+
-            '%linkCount%'+
-        '</span>'+
+            '%linkCount% '+
+        '</span> '+
         'IMDB links...'+
     '</div>';
     
-Other.prototype.processLinks = function(){
-    var links = this.jQuery(Other.jquery_imdb_link_selector);
+FilmtipsetExtension.Other.prototype.processLinks = function(){
+    var links = this.jQuery(FilmtipsetExtension.Other.jquery_imdb_link_selector);
     if (links.length > 0) {
         this.jQuery("body").append(
-            Other.progress_html
+            FilmtipsetExtension.Other.progress_html
                 .replace("%remsaUrl%", chrome.extension.getURL("images/progress.png"))
                 .replace("%linkCount%", links.length)
             );
@@ -36,7 +38,7 @@ Other.prototype.processLinks = function(){
             fakeId++;
             self.maxFakeId = fakeId;
             $a.attr('fakeid', fakeId);
-            var common = new Common();
+            var common = new FilmtipsetExtension.Common();
             var imdbIdt = common.getImdbIdFromUrl(href);
             chrome.extension.sendRequest(
                 { 
@@ -64,13 +66,13 @@ Other.prototype.processLinks = function(){
                             edgeOffset: 0,
                             keepAlive: true,
                             content: 
-                                Other.popover_html_template
+                                FilmtipsetExtension.Other.popover_html_template
                                     .replace("%description%", fakeIdAndGrade.movieInfo[0].data[0].movie.description)
                                     .replace("%title%", fakeIdAndGrade.movieInfo[0].data[0].movie.name)
                                     .replace("%imgUrl%", fakeIdAndGrade.movieInfo[0].data[0].movie.image)
                                     .replace("%url%", fakeIdAndGrade.movieInfo[0].data[0].movie.url)
                             });
-                    $link.append(Other.image_html_template.replace("%grade%", gradeUrl));
+                    $link.append(FilmtipsetExtension.Other.image_html_template.replace("%grade%", gradeUrl));
                     if (fakeId == self.maxFakeId) 
                         self.jQuery("#filmtipsetImdbLinks").stop().fadeOut(1000);
                     var $linkCount = self.jQuery("#filmLinkCount");
@@ -84,6 +86,6 @@ Other.prototype.processLinks = function(){
     };
     
 $(function() {
-    var other = new Other($);
+    var other = new FilmtipsetExtension.Other($);
     other.processLinks();
     });

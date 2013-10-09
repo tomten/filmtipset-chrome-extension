@@ -4,14 +4,14 @@
  * @constructor
  * @param {Array} gaq Reference to Google Analytics Async Queue. Used for event tracking.
  */
-function ExtensionHost(gaq){
+FilmtipsetExtension.ExtensionHost = function (gaq){
     this.gaq = gaq;        
     this.cache = new Cache();        
     this.gradeForTab = {};
     this.wantedList = undefined;
     }
     
-ExtensionHost.prototype.initAnalytics = function(){
+FilmtipsetExtension.ExtensionHost.prototype.initAnalytics = function(){
     this.gaq.push(['_setAccount', 'UA-285667-8']); // Same account as released extension in Chrome Web Store
     this.gaq.push(['_trackPageview']);
     var ga = document.createElement('script');
@@ -22,7 +22,7 @@ ExtensionHost.prototype.initAnalytics = function(){
     s.parentNode.insertBefore(ga, s);
     };
 
-ExtensionHost.prototype.track = function(
+FilmtipsetExtension.ExtensionHost.prototype.track = function(
         category, 
         action
         ) {
@@ -30,22 +30,22 @@ ExtensionHost.prototype.track = function(
     window._gaq.push(['_trackEvent', category, action]);
     };
 
-ExtensionHost.prototype.initLocalStorage = function(){
+FilmtipsetExtension.ExtensionHost.prototype.initLocalStorage = function(){
     localStorage.accessKey = "xtyrZqwjC7I1AVrX5e0TOw";
     if (!localStorage.userKey) {
         chrome.tabs.create({ url: "personal.html", selected: true });
         }
     };
 
-ExtensionHost.prototype.createAndSelectTab = function(url){
+FilmtipsetExtension.ExtensionHost.prototype.createAndSelectTab = function(url){
     chrome.tabs.create({ url: url, selected: true });
     };
 
-ExtensionHost.prototype.log = function(message) {
+FilmtipsetExtension.ExtensionHost.prototype.log = function(message) {
     console.log(message); 
     };         
 
-ExtensionHost.prototype.showPageActionForTab = function(
+FilmtipsetExtension.ExtensionHost.prototype.showPageActionForTab = function(
         iconUrl, 
         title, 
         tabId, 
@@ -57,7 +57,7 @@ ExtensionHost.prototype.showPageActionForTab = function(
     callback();
     };
 
-ExtensionHost.prototype.hidePageActionForTab = function(
+FilmtipsetExtension.ExtensionHost.prototype.hidePageActionForTab = function(
         tabId, 
         callback
         ) {            
@@ -65,11 +65,11 @@ ExtensionHost.prototype.hidePageActionForTab = function(
     callback();
     };
 
-ExtensionHost.prototype.activateImdbPage = function(
+FilmtipsetExtension.ExtensionHost.prototype.activateImdbPage = function(
         tabId, 
         imdbId
         ) {
-    var film = new FilmtipsetApi(
+    var film = new FilmtipsetExtension.FilmtipsetApi(
         localStorage.accessKey, 
         localStorage.userKey, 
         this.cache, 
@@ -81,7 +81,7 @@ ExtensionHost.prototype.activateImdbPage = function(
         function(movieInfo) {
             var gradeInfo = film.getGradeInfo(movieInfo);
             tips.gradeForTab["tab" + tabId] = gradeInfo;
-            var common = new Common();
+            var common = new FilmtipsetExtension.Common();
             var iconUrl = common.getIconFromGradeInfo(gradeInfo);
             var title = common.getTitleFromGradeInfo(gradeInfo);
             tips.showPageActionForTab(
@@ -94,7 +94,7 @@ ExtensionHost.prototype.activateImdbPage = function(
         );
     };
                 
-ExtensionHost.prototype.initRequestListener = function(){
+FilmtipsetExtension.ExtensionHost.prototype.initRequestListener = function(){
     var filmtips = this;
     chrome.extension.onRequest.addListener(function(
             request, 
@@ -109,7 +109,7 @@ ExtensionHost.prototype.initRequestListener = function(){
                 request.trackAction
                 );
         } else if (request.action === "gradeForLink") {
-            var film = new FilmtipsetApi(
+            var film = new FilmtipsetExtension.FilmtipsetApi(
                 localStorage.accessKey, 
                 localStorage.userKey, 
                 filmtips.cache, 
@@ -119,7 +119,7 @@ ExtensionHost.prototype.initRequestListener = function(){
                 '' + request.imdbId,
                 function(movieInfo) {
                     var gradeInfo = film.getGradeInfo(movieInfo);
-                    var common = new Common();
+                    var common = new FilmtipsetExtension.Common();
                     var iconUrl = common.getIconFromGradeInfo(gradeInfo);
                     callback({ 
                         fakeId: request.fakeId, 
@@ -134,7 +134,7 @@ ExtensionHost.prototype.initRequestListener = function(){
     }; 
     
 var _gaq = _gaq || []; // window-scoped variable for Google Analytics
-var filmtipset = new ExtensionHost(_gaq);
+var filmtipset = new FilmtipsetExtension.ExtensionHost(_gaq);
 filmtipset.initAnalytics();
 filmtipset.initLocalStorage();
 filmtipset.initRequestListener();
