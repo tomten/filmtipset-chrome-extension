@@ -10,7 +10,7 @@ Other.image_html_template = '<img style="position:absolute;" width="20" height="
 Other.jquery_imdb_link_selector = 'a:regex(href,(www\\.)?imdb\\.(.+)\\/tt(\\d+))';    
 Other.popover_html_template = '<a style="float:right;" href="%url%"><img style="padding-left:10px;" src="%imgUrl%" /></a>%title%<br/><br/>%description%<br style="clear:both;" clear="both" />';
 Other.progress_html = 
-    '<div id="filmtipsetImdbLinks" style="background-image: url(%remsaUrl%);">'+
+    '<div id="filmtipsetImdbLinks" style="background-image: url(%§aUrl%);">'+
         'Processing '+
         '<span id="filmLinkCount">'+
             '%linkCount%'+
@@ -23,7 +23,7 @@ Other.prototype.processLinks = function(){
     if (links.length > 0) {
         this.jQuery("body").append(
             Other.progress_html
-                .replace("%remsaUrl%", chrome.extension.getURL("remsa.png"))
+                .replace("%remsaUrl%", chrome.extension.getURL("images/progress.png"))
                 .replace("%linkCount%", links.length)
             );
         this.jQuery("#filmtipsetImdbLinks").hide().delay(1000).fadeIn(1000);        
