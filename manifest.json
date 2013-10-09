@@ -3,17 +3,17 @@
     "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
     "name": "__MSG_extensionName__",
     "short_name": "__MSG_extensionShortName__",
-    "version": "2.2",
+    "version": "2.3",
     "web_accessible_resources": [  
         "cache.js",
-        "common.js",
-        "filmtipset.js",
-        "filmtipsetApi.js",
-        "imdb.js",
+        "Filmtipset.Common.js",
+        "Filmtipset.ExtensionHost.js",
+        "Filmtipset.FilmtipsetApi.js",
+        "Filmtipset.Imdb.js",
         "jquery-1.10.2.min.js",
         "jquery.regex.js",
         "jquery.tipTip.minified.js",
-        "other.js",
+        "Filmtipset.Other.js",
         "remsa.png",
         "images/grade/1grade.png",
         "images/grade/1gradeactive.png",
@@ -55,8 +55,8 @@
         {
             "matches": [ "http://*.imdb.com/title*" ],
             "js": [ 
-                "common.js",
-                "imdb.js"
+                "Filmtipset.Common.js",
+                "Filmtipset.Imdb.js"
             ],
             "run_at": "document_start"
         },
@@ -67,8 +67,8 @@
                 "jquery-1.10.2.min.js",
                 "jquery.regex.js", 
                 "jquery.tipTip.minified.js", 
-                "common.js", 
-                "other.js"
+                "Filmtipset.Common.js", 
+                "Filmtipset.Other.js"
             ],
             "run_at": "document_start"
         }
