@@ -1,7 +1,9 @@
 "use strict";
 
-// constructor
-function FilmtipsetApi(
+/**
+ * @constructor
+ */
+FilmtipsetExtension.FilmtipsetApi = function (
         accessKey, 
         userKey, 
         cache, 
@@ -13,16 +15,30 @@ function FilmtipsetApi(
     this.logger = logger;
     }
 
-FilmtipsetApi.filmtipsetApiCgi = "http://www.filmtipset.se/api/api.cgi";
-FilmtipsetApi.url_template_imdb = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=imdb&id=%imdbId%";
-FilmtipsetApi.url_template_grade = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=grade&id=%filmtipsetMovieId%&grade=%grade%";
-FilmtipsetApi.url_template_get_wanted = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=list&id=wantedlist";
-FilmtipsetApi.url_template_add_to_wanted = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=add-to-list&id=wantedlist&movie=%filmtipsetMovieId%";
+FilmtipsetExtension.FilmtipsetApi.filmtipsetApiCgi = "http://www.filmtipset.se/api/api.cgi";
+FilmtipsetExtension.FilmtipsetApi.url_template_imdb = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=imdb&id=%imdbId%";
+FilmtipsetExtension.FilmtipsetApi.url_template_grade = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=grade&id=%filmtipsetMovieId%&grade=%grade%";
+FilmtipsetExtension.FilmtipsetApi.url_template_get_wanted = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=list&id=wantedlist";
+FilmtipsetExtension.FilmtipsetApi.url_template_add_to_wanted = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=add-to-list&id=wantedlist&movie=%filmtipsetMovieId%";
     
-FilmtipsetApi.prototype.getWantedList = function(callback) {
+FilmtipsetExtension.FilmtipsetApi.prototype.validateUserKey = function(
+        userKeyToValidate, 
+        callback
+        ) {
+        var result = this.getWantedList(function(data){
+            var userKeyWasValid = 
+                data[0] &&
+                data[0].user && 
+                data[0].user.id
+                ; 
+            callback(userKeyWasValid);
+            });
+    }
+
+FilmtipsetExtension.FilmtipsetApi.prototype.getWantedList = function(callback) {
     var url = 
-        FilmtipsetApi.url_template_get_wanted
-        .replace("%filmtipsetApiCgi%", FilmtipsetApi.filmtipsetApiCgi)
+        FilmtipsetExtension.FilmtipsetApi.url_template_get_wanted
+        .replace("%filmtipsetApiCgi%", FilmtipsetExtension.FilmtipsetApi.filmtipsetApiCgi)
         .replace("%accessKey%", this.accessKey)
         .replace("%userKey%", this.userKey)
         ;
@@ -34,13 +50,13 @@ FilmtipsetApi.prototype.getWantedList = function(callback) {
         );
     };
 
-FilmtipsetApi.prototype.addToWantedListForFilmtipsetId = function(
+FilmtipsetExtension.FilmtipsetApi.prototype.addToWantedListForFilmtipsetId = function(
         filmtipsetMovieId, 
         callback
         ) {
     var url = 
-        FilmtipsetApi.url_template_add_to_wanted
-        .replace("%filmtipsetApiCgi%", FilmtipsetApi.filmtipsetApiCgi)
+        FilmtipsetExtension.FilmtipsetApi.url_template_add_to_wanted
+        .replace("%filmtipsetApiCgi%", FilmtipsetExtension.FilmtipsetApi.filmtipsetApiCgi)
         .replace("%accessKey%", this.accessKey)
         .replace("%userKey%", this.userKey)
         .replace("%filmtipsetMovieId%", filmtipsetMovieId)
@@ -53,7 +69,7 @@ FilmtipsetApi.prototype.addToWantedListForFilmtipsetId = function(
         );
     };
 
-FilmtipsetApi.prototype.gradeForImdbId = function(
+FilmtipsetExtension.FilmtipsetApi.prototype.gradeForImdbId = function(
         imdbId, 
         grade, 
         callback
@@ -76,7 +92,7 @@ FilmtipsetApi.prototype.gradeForImdbId = function(
         );
     };    
 
-FilmtipsetApi.prototype.gradeForFilmtipsetId = function(
+FilmtipsetExtension.FilmtipsetApi.prototype.gradeForFilmtipsetId = function(
         filmtipsetMovieId, 
         grade, 
         callback
@@ -84,8 +100,8 @@ FilmtipsetApi.prototype.gradeForFilmtipsetId = function(
     // Clear the cache since we're changing the Filmtipset info.
     this.cache.clear();
     var url = 
-        FilmtipsetApi.url_template_grade
-        .replace("%filmtipsetApiCgi%", FilmtipsetApi.filmtipsetApiCgi)
+        FilmtipsetExtension.FilmtipsetApi.url_template_grade
+        .replace("%filmtipsetApiCgi%", FilmtipsetExtension.FilmtipsetApi.filmtipsetApiCgi)
         .replace("%grade%", grade)
         .replace("%filmtipsetMovieId%", filmtipsetMovieId)
         .replace("%accessKey%", this.accessKey)
@@ -99,7 +115,7 @@ FilmtipsetApi.prototype.gradeForFilmtipsetId = function(
         );
     };
 
-FilmtipsetApi.prototype.getInfoForImdbId = function(
+FilmtipsetExtension.FilmtipsetApi.prototype.getInfoForImdbId = function(
         imdbId, 
         callback
         ) {
@@ -111,8 +127,8 @@ FilmtipsetApi.prototype.getInfoForImdbId = function(
         return;
     }
     var url = 
-        FilmtipsetApi.url_template_imdb
-        .replace("%filmtipsetApiCgi%", FilmtipsetApi.filmtipsetApiCgi)
+        FilmtipsetExtension.FilmtipsetApi.url_template_imdb
+        .replace("%filmtipsetApiCgi%", FilmtipsetExtension.FilmtipsetApi.filmtipsetApiCgi)
         .replace("%imdbId%", imdbId)
         .replace("%accessKey%", this.accessKey)
         .replace("%userKey%", this.userKey)
@@ -130,7 +146,7 @@ FilmtipsetApi.prototype.getInfoForImdbId = function(
         );
     };
 
-FilmtipsetApi.prototype.getGradeInfo = function(json) {
+FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfo = function(json) {
     if (
         json && 
         json[0] && 
@@ -166,7 +182,7 @@ FilmtipsetApi.prototype.getGradeInfo = function(json) {
     return null;
     };
 
-FilmtipsetApi.prototype.xmlHttpRequest = function(
+FilmtipsetExtension.FilmtipsetApi.prototype.xmlHttpRequest = function(
         url, 
         callback, 
         json, 

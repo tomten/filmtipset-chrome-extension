@@ -1,11 +1,35 @@
 ﻿"use strict";
 
-// constructor
-function Popup(jQuery){
+/**
+ * @constructor
+ * @param {object} jQuery Reference to jQuery. Used for DOM manipulation.
+ */
+FilmtipsetExtension.Popup = function (jQuery){
     this.jQuery = jQuery;
     }
 
-Popup.prototype.showGradeButtons = function(tab) {
+/**
+ * Returns true if any element in the array matches the supplied predicate function.
+ * @param {function} comparer Predicate function for matching an element.
+ * @return {boolean} True if any element in the array matches the supplied predicate function.
+ */
+ Array.prototype.any = function(comparer){
+    var result = false;
+    var self = this;
+    for (var elementIndex in self) {
+        var element = self[elementIndex];
+        var match = comparer(element);
+        if (match)
+            return true;
+        }
+    return false;
+    };
+    
+/**
+ * Draws the buttons in the popup.
+ * @param {tab} Active tab.
+ */
+FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
     var backgroundPage = chrome.extension.getBackgroundPage(); // HACK
     var currentGradeInfo = backgroundPage.filmtipset.gradeForTab["tab" + tab.id];
     var popup = this;
@@ -33,13 +57,10 @@ Popup.prototype.showGradeButtons = function(tab) {
             });
         }
         var wants = false;
-        if (backgroundPage.filmtipset.wantedList) {
-            for (var wantedMovie in backgroundPage.filmtipset.wantedList) {
-                var wantedImdb = backgroundPage.filmtipset.wantedList[wantedMovie].movie.id;
-                if (wantedImdb == currentGradeInfo.id) 
-                    wants = true; // TODO: better "find element in array" mechanism?
-                    }
-            }
+        if (backgroundPage.filmtipset.wantedList) 
+            wants = backgroundPage.filmtipset
+                .wantedList
+                .any(function(movie){ return currentGradeInfo.id == movie.movie.id; });
         if (!wants) {
             var wantedDiv = this.jQuery('<div id="want" class="i18n voteimage want"></div>');
             this.jQuery("#vote").append(wantedDiv);
@@ -78,12 +99,12 @@ Popup.prototype.showGradeButtons = function(tab) {
 
     };
 
-Popup.prototype.voteFromDiv = function(div){
+FilmtipsetExtension.Popup.prototype.voteFromDiv = function(div){
     var g = this.jQuery(div).attr("grade");
     this.vote(g); 
 };
 
-Popup.prototype.want = function() {
+FilmtipsetExtension.Popup.prototype.want = function() {
     chrome.tabs.getSelected(
         null, 
         function(tab) {
@@ -105,7 +126,7 @@ Popup.prototype.want = function() {
                                 function(getWantedListResult) {
                                     backgroundPage.filmtipset.wantedList = getWantedListResult[0].data[0].movies;
                                     var gradeInfo = backgroundPage.filmtipset.gradeForTab["tab" + tab.id];
-                                    var common = new Common();
+                                    var common = new FilmtipsetExtension.Common();
                                     var iconUrl = common.getIconFromGradeInfo(gradeInfo);
                                     var title = common.getTitleFromGradeInfo(gradeInfo);
                                     backgroundPage.filmtipset.showPageActionForTab(
@@ -126,7 +147,7 @@ Popup.prototype.want = function() {
     );
 };
 
-Popup.prototype.vote = function(grade) {
+FilmtipsetExtension.Popup.prototype.vote = function(grade) {
     var backgroundPage = chrome.extension.getBackgroundPage(); // HACK
     backgroundPage.filmtipset.log("voting " + grade);
     var popup = this;
@@ -136,13 +157,13 @@ Popup.prototype.vote = function(grade) {
     );
 };
 
-Popup.prototype.hideAndGrade = function(tab, grade) {
+FilmtipsetExtension.Popup.prototype.hideAndGrade = function(tab, grade) {
     var backgroundPage = chrome.extension.getBackgroundPage(); // HACK
     backgroundPage.filmtipset.log("voting " + grade + " for tab " + tab.id);
     this.doGrade(tab, grade);
 };
 
-Popup.prototype.doGrade = function(tab, grade) {
+FilmtipsetExtension.Popup.prototype.doGrade = function(tab, grade) {
     var backgroundPage = chrome.extension.getBackgroundPage(); // HACK
     backgroundPage.filmtipset.log("voting " + grade + " for tab " + tab.id);
     var currentGradeInfo = backgroundPage.filmtipset.gradeForTab["tab" + tab.id];
@@ -160,11 +181,11 @@ Popup.prototype.doGrade = function(tab, grade) {
     );
 };
 
-Popup.prototype.updatePageAction = function(gradeResult, tab, film) {
+FilmtipsetExtension.Popup.prototype.updatePageAction = function(gradeResult, tab, film) {
     var backgroundPage = chrome.extension.getBackgroundPage(); // HACK
     var gradeInfo = film.getGradeInfo(gradeResult);
     backgroundPage.filmtipset.gradeForTab["tab" + tab.id] = gradeInfo;
-    var common = new Common();
+    var common = new FilmtipsetExtension.Common();
     var iconUrl = common.getIconFromGradeInfo(gradeInfo);
     var title = common.getTitleFromGradeInfo(gradeInfo);
     backgroundPage.filmtipset.log("updating page action with '" + title + "' for tab " + tab.id);
@@ -175,10 +196,3 @@ Popup.prototype.updatePageAction = function(gradeResult, tab, film) {
         function() { window.close(); } // HACK
     );
 };
-
-// Show grade buttons for the selected tab.
-chrome.tabs.getSelected(
-    null, 
-    function(selectedTab) { 
-        var popup = new Popup($);
-        popup.showGradeButtons(selectedTab); });
