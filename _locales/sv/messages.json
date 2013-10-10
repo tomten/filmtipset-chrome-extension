@@ -11,5 +11,6 @@
 	"accessKeyLabel": { "message": "Filmtipset API access key" },
 	"userKeyLabel": { "message": "Nyckel" },
 	"want": { "message": "Vill se" },
-	"filmtipsetpage": { "message": "Filmtipsetsida" }
+	"filmtipsetpage": { "message": "Filmtipsetsida" },
+	"invalidApiKey": { "message": "Felaktig API-nyckel från Mina Sidor på Filmtipset! Kontrollera att du matat in exakt rätt!" }
 }

@@ -11,5 +11,6 @@
 	"accessKeyLabel": { "message": "Access key" },
 	"userKeyLabel": { "message": "User key" },
 	"want": { "message": "Want to see" },
-	"filmtipsetpage": { "message": "Filmtipset page" }
+	"filmtipsetpage": { "message": "Filmtipset page" },
+	"invalidApiKey": { "message": "Invalid user API key from My Pages on Filmtipset! Verify that you have entered it exactly right!" }
 }

@@ -1,6 +1,6 @@
 ﻿#filmtipsetImdbLinks 
 {
-	/* background-image: url(' + chrome.extension.getURL("remsa.png") + '); */
+	/* background-image: url(' + chrome.extension.getURL("images/progress.png") + '); */
 	z-index: 12345;
 	left: 100px;
 	top: 100px;
