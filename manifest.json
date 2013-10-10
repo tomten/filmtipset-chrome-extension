@@ -63,7 +63,8 @@
             "js": [ 
                 "Filmtipset.js",
                 "Filmtipset.Common.js",
-                "Filmtipset.Imdb.js"
+                "Filmtipset.Imdb.js",
+                "imdb.js"
             ],
             "run_at": "document_start"
         },
@@ -76,7 +77,8 @@
                 "jquery.tipTip.minified.js", 
                 "Filmtipset.js", 
                 "Filmtipset.Common.js", 
-                "Filmtipset.Other.js"
+                "Filmtipset.Other.js",
+                "other.js"
             ],
             "run_at": "document_start"
         }

@@ -5,7 +5,7 @@ Chrome Extension for Filmtipset movie site. Released version available in Chrome
 
 Version 2.3:
 
-- ?
+- User API key validation on personal settings page
 
 Version 2.2:
 
