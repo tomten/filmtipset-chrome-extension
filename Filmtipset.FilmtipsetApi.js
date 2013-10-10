@@ -21,6 +21,18 @@ FilmtipsetExtension.FilmtipsetApi.url_template_grade = "%filmtipsetApiCgi%?acces
 FilmtipsetExtension.FilmtipsetApi.url_template_get_wanted = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=list&id=wantedlist";
 FilmtipsetExtension.FilmtipsetApi.url_template_add_to_wanted = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=add-to-list&id=wantedlist&movie=%filmtipsetMovieId%";
     
+FilmtipsetExtension.FilmtipsetApi.prototype.validateUserKey = function(
+        userKeyToValidate, 
+        callback
+        ) {
+        var result = this.getWantedList(function(data){
+            console.log(data[0].data[0].description);
+            var userKeyWasValid = !(data[0].data[0].description === "Filmer som  vill se"); // HACK
+            console.log(userKeyWasValid);
+            callback(userKeyWasValid);
+            });
+    }
+
 FilmtipsetExtension.FilmtipsetApi.prototype.getWantedList = function(callback) {
     var url = 
         FilmtipsetExtension.FilmtipsetApi.url_template_get_wanted

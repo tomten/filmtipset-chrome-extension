@@ -6,18 +6,18 @@
 FilmtipsetExtension.Personal = function (jQuery){
     this.dirty = false;
     this.jQuery = jQuery;
-    }
+    };
 
 FilmtipsetExtension.Personal.prototype.init = function() {
     this.loadOptions();
-    var p = this;
+    var self = this;
     this.jQuery(".saveoptions").click(function(){ 
-        p.saveOptions(); 
+        self.saveOptions(); 
         });
     this.jQuery(".localStorage")
-        .change(function(){ p.setDirty(); })
-        .bind("paste", function(){ p.setDirty(); })
-        .keyup(function(){ p.setDirty(); })
+        .change(function(){ self.setDirty(); })
+        .bind("paste", function(){ self.setDirty(); })
+        .keyup(function(){ self.setDirty(); })
         ;
     var jQuery = this.jQuery;
     this.jQuery(".i18n").each(
@@ -53,14 +53,32 @@ FilmtipsetExtension.Personal.prototype.loadOptions = function(){
 
 FilmtipsetExtension.Personal.prototype.saveOptions = function() {
     var jQuery = this.jQuery;
-    this.jQuery(".localStorage").each(
-        function() {
-            var ls = jQuery(this);
-            var name = ls.attr("name");
-            var val = ls.val();
-            localStorage[name] = val;
+    // TODO: validate user key
+    var $userKey = this.jQuery("input[name='userKey']");
+    var userKeyToValidate = $userKey.val();
+    var film = new FilmtipsetExtension.FilmtipsetApi(
+        localStorage.accessKey, // HACK
+        userKeyToValidate
+        );
+    var self = this;
+    film.validateUserKey(
+        userKeyToValidate,
+        function(userKeyWasValid){
+            console.log(userKeyWasValid);
+            if (!userKeyWasValid) {
+                alert("Invalid API key from Filmtipset!"); // TODO: i18n
+                return;
+                }
+            self.jQuery(".localStorage").each(
+                function() {
+                    var $localStorageElement = jQuery(this);
+                    var name = $localStorageElement.attr("name");
+                    var val = $localStorageElement.val();
+                    localStorage[name] = val;
+                    }
+                );
+            self.dirty = false;
+            self.loadOptions();
             }
         );
-        this.dirty = false;
-        this.loadOptions();
     };
