@@ -64,7 +64,7 @@ FilmtipsetExtension.Personal.prototype.saveOptions = function() {
         userKeyToValidate,
         function(userKeyWasValid){
             if (!userKeyWasValid) {
-                alert("Invalid API key from Filmtipset!"); // TODO: i18n
+                alert(chrome.i18n.getMessage("invalidApiKey")); 
                 return;
                 }
             self.jQuery(".localStorage").each(
