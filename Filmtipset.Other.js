@@ -84,8 +84,3 @@ FilmtipsetExtension.Other.prototype.processLinks = function(){
             });
         }
     };
-    
-$(function() {
-    var other = new FilmtipsetExtension.Other($);
-    other.processLinks();
-    });

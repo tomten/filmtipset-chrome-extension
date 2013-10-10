@@ -64,6 +64,3 @@ FilmtipsetExtension.Personal.prototype.saveOptions = function() {
         this.dirty = false;
         this.loadOptions();
     };
-
-var personal = new FilmtipsetExtension.Personal($);
-personal.init();

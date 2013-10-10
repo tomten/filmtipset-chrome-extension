@@ -196,10 +196,3 @@ FilmtipsetExtension.Popup.prototype.updatePageAction = function(gradeResult, tab
         function() { window.close(); } // HACK
     );
 };
-
-// Show grade buttons for the selected tab.
-chrome.tabs.getSelected(
-    null, 
-    function(selectedTab) { 
-        var popup = new FilmtipsetExtension.Popup($);
-        popup.showGradeButtons(selectedTab); });

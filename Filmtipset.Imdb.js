@@ -22,6 +22,3 @@ FilmtipsetExtension.Imdb.prototype.init = function(){
                 });
         }
     };
-
-var imdb = new FilmtipsetExtension.Imdb(window.location.href);
-imdb.init();
