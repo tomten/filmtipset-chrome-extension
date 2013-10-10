@@ -31,7 +31,6 @@ FilmtipsetExtension.Personal.prototype.init = function() {
     };
 
 FilmtipsetExtension.Personal.prototype.setDirty = function() {
-    console.log("setDirty; this=" + this);
     if (!this.dirty) {
         this.dirty = true;
         this.jQuery("#save").fadeIn("fast");
@@ -64,7 +63,6 @@ FilmtipsetExtension.Personal.prototype.saveOptions = function() {
     film.validateUserKey(
         userKeyToValidate,
         function(userKeyWasValid){
-            console.log(userKeyWasValid);
             if (!userKeyWasValid) {
                 alert("Invalid API key from Filmtipset!"); // TODO: i18n
                 return;

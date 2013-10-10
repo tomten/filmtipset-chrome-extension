@@ -26,9 +26,11 @@ FilmtipsetExtension.FilmtipsetApi.prototype.validateUserKey = function(
         callback
         ) {
         var result = this.getWantedList(function(data){
-            console.log(data[0].data[0].description);
-            var userKeyWasValid = !(data[0].data[0].description === "Filmer som  vill se"); // HACK
-            console.log(userKeyWasValid);
+            var userKeyWasValid = 
+                data[0] &&
+                data[0].user && 
+                data[0].user.id
+                ; 
             callback(userKeyWasValid);
             });
     }
