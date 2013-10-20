@@ -3,7 +3,7 @@
     "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
     "name": "__MSG_extensionName__",
     "short_name": "__MSG_extensionShortName__",
-    "version": "2.3",
+    "version": "2.7",
     "web_accessible_resources": [  
         "filmtipset.html.js",
         "grade.html.js",
