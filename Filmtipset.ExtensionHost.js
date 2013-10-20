@@ -6,7 +6,7 @@
  */
 FilmtipsetExtension.ExtensionHost = function (gaq){
     this.gaq = gaq;        
-    this.cache = new Cache();        
+    this.cache = new Cache(undefined, true);        
     this.gradeForTab = {};
     this.wantedList = undefined;
     }

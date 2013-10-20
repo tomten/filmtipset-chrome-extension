@@ -9,7 +9,8 @@ FilmtipsetExtension.Links = function (jQuery){
     }
 
 FilmtipsetExtension.Links.image_html_template = '<img style="position:absolute;" width="20" height="20" src="%grade%" />';    
-FilmtipsetExtension.Links.jquery_imdb_link_selector = 'a:regex(href,(www\\.)?imdb\\.(.+)\\/tt(\\d+))';    
+FilmtipsetExtension.Links.jquery_imdb_link_selector = 'a:regex(href,(www\\.)?imdb\\.(.+)\\/tt(\\d+)\\/?)';    
+FilmtipsetExtension.Links.jquery_imdb_link_selector_on_imdb = 'a[href^="/title/tt"]';    
 FilmtipsetExtension.Links.popover_html_template = '<a style="float:right;" href="%url%"><img style="padding-left:10px;" src="%imgUrl%" /></a>%title%<br/><br/>%description%<br style="clear:both;" clear="both" />';
 FilmtipsetExtension.Links.progress_html = 
     '<div id="filmtipsetImdbLinks" style="background-image: url(%remsaUrl%);">'+
@@ -20,8 +21,16 @@ FilmtipsetExtension.Links.progress_html =
         'IMDB links...'+
     '</div>';
     
+FilmtipsetExtension.Links.prototype.processLinksOnImdb = function(){
+    this.processLinksInternal(FilmtipsetExtension.Links.jquery_imdb_link_selector_on_imdb);
+    }
+
 FilmtipsetExtension.Links.prototype.processLinks = function(){
-    var links = this.jQuery(FilmtipsetExtension.Links.jquery_imdb_link_selector);
+    this.processLinksInternal(FilmtipsetExtension.Links.jquery_imdb_link_selector);
+    }
+
+FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selector){
+    var links = this.jQuery(link_selector);
     if (links.length > 0) {
         this.jQuery("body").append(
             FilmtipsetExtension.Links.progress_html

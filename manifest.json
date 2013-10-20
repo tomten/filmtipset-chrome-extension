@@ -59,11 +59,14 @@
     "options_page": "personal.html",
     "content_scripts": [
         {
-            "matches": [ "http://*.imdb.com/title*" ],
+            "matches": [ "http://*.imdb.com/*" ],
             "js": [ 
+                "jquery-1.10.2.min.js",
+                "jquery.tipTip.minified.js", 
                 "Filmtipset.js",
                 "Filmtipset.Common.js",
                 "Filmtipset.Imdb.js",
+                "Filmtipset.Links.js",
                 "imdb.js"
             ],
             "run_at": "document_start"
