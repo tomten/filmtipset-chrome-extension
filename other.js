@@ -1,4 +1,4 @@
 $(function(){
-    var other = new FilmtipsetExtension.Other($);
-    other.processLinks();
+    var links = new FilmtipsetExtension.Links($);
+    links.processLinks();
     });
