@@ -62,6 +62,7 @@
             "matches": [ "http://*.imdb.com/*" ],
             "js": [ 
                 "jquery-1.10.2.min.js",
+                "jquery.regex.js", 
                 "jquery.tipTip.minified.js", 
                 "Filmtipset.js",
                 "Filmtipset.Common.js",

@@ -10,7 +10,7 @@ FilmtipsetExtension.Links = function (jQuery){
 
 FilmtipsetExtension.Links.image_html_template = '<img style="position:absolute;" width="20" height="20" src="%grade%" />';    
 FilmtipsetExtension.Links.jquery_imdb_link_selector = 'a:regex(href,(www\\.)?imdb\\.(.+)\\/tt(\\d+)\\/?)';    
-FilmtipsetExtension.Links.jquery_imdb_link_selector_on_imdb = 'a[href^="/title/tt"]';    
+FilmtipsetExtension.Links.jquery_imdb_link_selector_on_imdb = 'a:regex(href,^\\/title\\/tt(\\d+)\\/?$)';    
 FilmtipsetExtension.Links.popover_html_template = '<a style="float:right;" href="%url%"><img style="padding-left:10px;" src="%imgUrl%" /></a>%title%<br/><br/>%description%<br style="clear:both;" clear="both" />';
 FilmtipsetExtension.Links.progress_html = 
     '<div id="filmtipsetImdbLinks" style="background-image: url(%remsaUrl%);">'+
