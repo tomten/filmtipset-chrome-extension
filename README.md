@@ -3,6 +3,10 @@ filmtipset-chrome-extension
 
 Chrome Extension for Filmtipset movie site. Released version available in Chrome Web Store: https://chrome.google.com/webstore/detail/filmtipset/faajjfnpkdjpceeodjnmhdphbgehjeji
 
+Version 2.4:
+
+- On-page Filmtipset integration also on IMDB. For example on directory/actor pages
+
 Version 2.3:
 
 - User API key validation on personal settings page
