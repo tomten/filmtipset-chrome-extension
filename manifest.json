@@ -3,7 +3,7 @@
     "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
     "name": "__MSG_extensionName__",
     "short_name": "__MSG_extensionShortName__",
-    "version": "2.3",
+    "version": "2.4",
     "web_accessible_resources": [  
         "filmtipset.html.js",
         "grade.html.js",
@@ -19,7 +19,7 @@
         "jquery-1.10.2.min.js",
         "jquery.regex.js",
         "jquery.tipTip.minified.js",
-        "Filmtipset.Other.js",
+        "Filmtipset.Links.js",
         "images/progress.png",
         "images/grade/1grade.png",
         "images/grade/1gradeactive.png",
@@ -59,11 +59,15 @@
     "options_page": "personal.html",
     "content_scripts": [
         {
-            "matches": [ "http://*.imdb.com/title*" ],
+            "matches": [ "http://*.imdb.com/*" ],
             "js": [ 
+                "jquery-1.10.2.min.js",
+                "jquery.regex.js", 
+                "jquery.tipTip.minified.js", 
                 "Filmtipset.js",
                 "Filmtipset.Common.js",
                 "Filmtipset.Imdb.js",
+                "Filmtipset.Links.js",
                 "imdb.js"
             ],
             "run_at": "document_start"
@@ -77,7 +81,7 @@
                 "jquery.tipTip.minified.js", 
                 "Filmtipset.js", 
                 "Filmtipset.Common.js", 
-                "Filmtipset.Other.js",
+                "Filmtipset.Links.js",
                 "other.js"
             ],
             "run_at": "document_start"
