@@ -93,3 +93,19 @@ FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selecto
             });
         }
     };
+    
+
+    
+    
+    
+/**
+ * @constructor
+ */
+FilmtipsetExtension.GoogleMovies = function (jQuery){
+    this.maxFakeId = 0;
+    this.jQuery = jQuery;
+    };
+
+FilmtipsetExtension.GoogleMovies.prototype.processLinks = function(){
+    console.log("GoogleMOVIES"); // TODO
+    };

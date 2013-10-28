@@ -10,6 +10,7 @@
         "personal.html.js",
         "imdb.js",
         "other.js",
+        "googlemovies.js",
         "cache.js",
         "Filmtipset.js",
         "Filmtipset.Common.js",
@@ -20,6 +21,7 @@
         "jquery.regex.js",
         "jquery.tipTip.minified.js",
         "Filmtipset.Links.js",
+        "Filmtipset.GoogleMovies.js",
         "images/progress.png",
         "images/grade/1grade.png",
         "images/grade/1gradeactive.png",
@@ -58,6 +60,20 @@
     },
     "options_page": "personal.html",
     "content_scripts": [
+        {
+            "matches": [ "http://*.google.se/movies?*" ],
+            "js": [ 
+                "jquery-1.10.2.min.js",
+                "jquery.regex.js", 
+                "jquery.tipTip.minified.js", 
+                "Filmtipset.js",
+                "Filmtipset.Common.js",
+                "Filmtipset.GoogleMovies.js",
+                "Filmtipset.Links.js",
+                "googlemovies.js"
+            ],
+            "run_at": "document_start"
+        },
         {
             "matches": [ "http://*.imdb.com/*" ],
             "js": [ 
