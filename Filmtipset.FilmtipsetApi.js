@@ -17,6 +17,7 @@ FilmtipsetExtension.FilmtipsetApi = function (
 
 FilmtipsetExtension.FilmtipsetApi.filmtipsetApiCgi = "http://www.filmtipset.se/api/api.cgi";
 FilmtipsetExtension.FilmtipsetApi.url_template_imdb = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=imdb&id=%imdbId%";
+FilmtipsetExtension.FilmtipsetApi.url_template_search = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=search&id=%query%";
 FilmtipsetExtension.FilmtipsetApi.url_template_grade = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=grade&id=%filmtipsetMovieId%&grade=%grade%";
 FilmtipsetExtension.FilmtipsetApi.url_template_get_wanted = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=list&id=wantedlist";
 FilmtipsetExtension.FilmtipsetApi.url_template_add_to_wanted = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=add-to-list&id=wantedlist&movie=%filmtipsetMovieId%";
@@ -115,6 +116,63 @@ FilmtipsetExtension.FilmtipsetApi.prototype.gradeForFilmtipsetId = function(
         );
     };
 
+FilmtipsetExtension.FilmtipsetApi.prototype.search = function(
+        query, 
+        callback
+        ) {
+    var key = "search" + query;
+    var cachedSearch = this.cache.getItem(key);
+    if (cachedSearch) {
+        callback(cachedSearch);
+        return;
+    }
+    var url = 
+        FilmtipsetExtension.FilmtipsetApi.url_template_search
+        .replace("%filmtipsetApiCgi%", FilmtipsetExtension.FilmtipsetApi.filmtipsetApiCgi)
+        .replace("%query%", query)
+        .replace("%accessKey%", this.accessKey)
+        .replace("%userKey%", this.userKey)
+        ;
+    var cache = this.cache;
+    this.xmlHttpRequest(
+        url, 
+        function(data) {
+            cache.setItem(key, data);
+            callback(data);
+            },                 
+        true,
+        this.logger
+        );
+    };
+
+Array.prototype.where = function(predicate){
+    var ret = [];
+    this.forEach(function(x){
+        if (predicate(x) === true) {
+            ret.push(x);
+            }
+        });
+    return ret;
+    };
+
+FilmtipsetExtension.FilmtipsetApi.prototype.searchExact = function(
+        query, 
+        callback
+        ) {
+    this.search(
+        query, 
+        function(results){
+            var exactResults = results[0].data[0].hits.where(function(result){
+                var exactResult = 
+                    result.movie.orgname == query ||
+                    result.movie.name == query                       
+                return exactResult;
+                });
+            callback(exactResults);
+            }
+        );
+    }
+    
 FilmtipsetExtension.FilmtipsetApi.prototype.getInfoForImdbId = function(
         imdbId, 
         callback
