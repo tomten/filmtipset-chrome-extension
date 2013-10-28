@@ -1,4 +1,4 @@
 $(function(){
-    var googleMovies = new FilmtipsetExtension.GoogleMovies($);
-    googleMovies.processLinks();
+    var googleMovies = new FilmtipsetExtension.Links($);
+    googleMovies.processLinksOnGoogleMovies();
 });

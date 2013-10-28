@@ -131,6 +131,27 @@ FilmtipsetExtension.ExtensionHost.prototype.initRequestListener = function(){
                         });
                     }
                 );
+        } else if (request.action === "gradeForLinkText") {
+            var film = new FilmtipsetExtension.FilmtipsetApi(
+                localStorage.accessKey, 
+                localStorage.userKey, 
+                filmtips.cache, 
+                filmtips.log
+                );
+            film.searchExact(
+                '' + request.imdbId, // HACK
+                function(movieInfos) {
+                    var movieInfo = movieInfos.length > 0 && movieInfos[0].movie ? movieInfos[0].movie : {}; // HACK
+                    var gradeInfo = film.getGradeInfoMovie(movieInfo);
+                    var common = new FilmtipsetExtension.Common();
+                    var iconUrl = common.getIconFromGradeInfo(gradeInfo);
+                    callback({ 
+                        fakeId: request.fakeId, 
+                        grade: iconUrl, 
+                        movieInfo: movieInfo 
+                        });
+                    }
+                );
             } 
         } 
     ); 

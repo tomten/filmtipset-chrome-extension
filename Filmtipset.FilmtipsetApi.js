@@ -240,6 +240,37 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfo = function(json) {
     return null;
     };
 
+FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfoMovie = function(json) { // HACK
+    if (true) {
+        if (true) {
+            var id = json.id; // undefined, "1234"
+            if (id) {
+                var grade = json.grade;
+                if (grade) {
+                    var gradevalue = grade.value; // null, "1", "2", "3", "4", "5"
+                    var gradetype = grade.type; // "none", "seen", "calculated"
+                    var gradeAndType = 
+                    {
+                        "grade": gradevalue,
+                        "type": gradetype,
+                        "id": id
+                    };
+                    return gradeAndType;
+                    } else {
+                        // No grade available
+                    }
+                } else {
+                    // Unknown movie
+                }
+            } else {
+                // No movie (bad response?)
+            }
+        } else {
+            // Unknown movie (or bad response)
+        }
+    return null;
+    };
+
 FilmtipsetExtension.FilmtipsetApi.prototype.xmlHttpRequest = function(
         url, 
         callback, 

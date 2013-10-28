@@ -21,7 +21,6 @@
         "jquery.regex.js",
         "jquery.tipTip.minified.js",
         "Filmtipset.Links.js",
-        "Filmtipset.GoogleMovies.js",
         "images/progress.png",
         "images/grade/1grade.png",
         "images/grade/1gradeactive.png",
@@ -68,7 +67,6 @@
                 "jquery.tipTip.minified.js", 
                 "Filmtipset.js",
                 "Filmtipset.Common.js",
-                "Filmtipset.GoogleMovies.js",
                 "Filmtipset.Links.js",
                 "googlemovies.js"
             ],
