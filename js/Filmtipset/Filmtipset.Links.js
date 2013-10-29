@@ -6,7 +6,7 @@
 FilmtipsetExtension.Links = function (jQuery){
     this.maxFakeId = 0;
     this.jQuery = jQuery;
-    }
+    };
 
 FilmtipsetExtension.Links.image_html_template = '<img style="position:absolute;" width="20" height="20" src="%grade%" />';    
 FilmtipsetExtension.Links.jquery_imdb_link_selector = 'a:regex(href, (www\\.)?imdb\\.(.+)\\/tt(\\d+)\\/?)';    
@@ -24,15 +24,15 @@ FilmtipsetExtension.Links.progress_html =
     
 FilmtipsetExtension.Links.prototype.processLinksOnGoogleMovies = function(){
     this.processLinksInternal(FilmtipsetExtension.Links.jquery_imdb_link_selector_on_google_movies);
-    }
+    };
 
 FilmtipsetExtension.Links.prototype.processLinksOnImdb = function(){
     this.processLinksInternal(FilmtipsetExtension.Links.jquery_imdb_link_selector_on_imdb);
-    }
+    };
 
 FilmtipsetExtension.Links.prototype.processLinks = function(){
     this.processLinksInternal(FilmtipsetExtension.Links.jquery_imdb_link_selector);
-    }
+    };
 
 FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selector){
     var $links = this.jQuery(link_selector);
@@ -95,6 +95,6 @@ FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selecto
                     $linkCount.html(linksLeft);
                     }
                 );
-            }; 
+            } 
         }
     };

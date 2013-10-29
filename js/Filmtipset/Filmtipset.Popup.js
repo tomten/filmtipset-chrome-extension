@@ -6,15 +6,14 @@
  */
 FilmtipsetExtension.Popup = function (jQuery){
     this.jQuery = jQuery;
-    }
+    };
 
 /**
  * Returns true if any element in the array matches the supplied predicate function.
  * @param {function} comparer Predicate function for matching an element.
  * @return {boolean} True if any element in the array matches the supplied predicate function.
  */
- Array.prototype.any = function(comparer){
-    var result = false;
+Array.prototype.any = function(comparer){
     var self = this;
     for (var elementIndex in self) {
         var element = self[elementIndex];
@@ -48,11 +47,29 @@ FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
             var voteDiv;
             if (i == currentGradeInfo.grade) {
                 voteDiv = this.jQuery(
-                    '<div grade="' + i + '" class="voteimage grade"><img alt="' + i + '" src="' + chrome.extension.getURL('images/grade/' + i + 'gradeactive.png') + '" /></div>');
+                    '<div grade="%i%" class="voteimage grade"><img alt="%i%" src="%gradeImgUrl%" /></div>'
+                        .replace('%i%', i)
+                        .replace(
+                            '%gradeImgUrl%', 
+                            chrome.extension.getURL(
+                                'images/grade/%i%gradeactive.png'
+                                    .replace('%i%', i)
+                                )
+                            )
+                    );
             }
             else {
                 voteDiv = this.jQuery(
-                    '<div grade="' + i + '" class="voteimage grade"><img alt="' + i + '" src="' + chrome.extension.getURL('images/grade/' + i + 'grade.png') + " /></div>');
+                    '<div grade="%i%" class="voteimage grade"><img alt="%i%" src="%gradeImgUrl%" /></div>'
+                        .replace('%i%', i)
+                        .replace(
+                            '%gradeImgUrl%', 
+                            chrome.extension.getURL(
+                                'images/grade/%i%grade.png'
+                                    .replace('%i%', i)
+                                )
+                            )
+                    );
             }
             this.jQuery("#vote").append(voteDiv);
             voteDiv.click(function(){
@@ -118,7 +135,7 @@ FilmtipsetExtension.Popup.prototype.want = function() {
                 function() {
                     var currentGradeInfo = backgroundPage.filmtipset.gradeForTab["tab" + tab.id];
                     var cache = backgroundPage.filmtipset.cache;
-                    var film = new FilmtipsetApi(
+                    var film = new FilmtipsetExtension.FilmtipsetApi(
                         localStorage.accessKey, 
                         localStorage.userKey, 
                         cache
@@ -128,7 +145,7 @@ FilmtipsetExtension.Popup.prototype.want = function() {
                         function() {
                             film.getWantedList(
                                 function(getWantedListResult) {
-                                    backgroundPage.filmtipset.wantedList = getWantedListResult[0].data[0].movies;
+                                    backgroundPage.filmtipset.wantedList = getWantedListResult;
                                     var gradeInfo = backgroundPage.filmtipset.gradeForTab["tab" + tab.id];
                                     var common = new FilmtipsetExtension.Common();
                                     var iconUrl = common.getIconFromGradeInfo(gradeInfo);
@@ -172,7 +189,7 @@ FilmtipsetExtension.Popup.prototype.doGrade = function(tab, grade) {
     backgroundPage.filmtipset.log("voting " + grade + " for tab " + tab.id);
     var currentGradeInfo = backgroundPage.filmtipset.gradeForTab["tab" + tab.id];
     var cache = backgroundPage.filmtipset.cache;
-    var film = new FilmtipsetApi(
+    var film = new FilmtipsetExtension.FilmtipsetApi(
         localStorage.accessKey, 
         localStorage.userKey, 
         cache);
@@ -187,7 +204,7 @@ FilmtipsetExtension.Popup.prototype.doGrade = function(tab, grade) {
 
 FilmtipsetExtension.Popup.prototype.updatePageAction = function(gradeResult, tab, film) {
     var backgroundPage = chrome.extension.getBackgroundPage(); // HACK
-    var gradeInfo = film.getGradeInfo(gradeResult);
+    var gradeInfo = film.getGradeInfoMovie(gradeResult);
     backgroundPage.filmtipset.gradeForTab["tab" + tab.id] = gradeInfo;
     var common = new FilmtipsetExtension.Common();
     var iconUrl = common.getIconFromGradeInfo(gradeInfo);

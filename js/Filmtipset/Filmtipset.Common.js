@@ -3,7 +3,7 @@
 /**
  * @constructor
  */
-FilmtipsetExtension.Common = function (){}
+FilmtipsetExtension.Common = function (){};
 
 FilmtipsetExtension.Common.prototype.getImdbIdFromUrl = function(url) {
     var re = /\/tt(\d+)\D/i;

@@ -12,7 +12,7 @@ FilmtipsetExtension.ExtensionHost = function(gaq){
         new Cache.LocalStorageCacheStorage()); // Use this extension's Local Storage for persisting the cache
     this.gradeForTab = {}; // Session-scoped storage for the current page action grades for different browser tabs
     this.wantedList = undefined; // Session-scoped storage for items in the user's Filmtipset Wanted List
-    }
+    };
     
 FilmtipsetExtension.ExtensionHost.prototype.initAnalytics = function(){
     this.gaq.push(['_setAccount', 'UA-285667-8']); // Same account as released extension in Chrome Web Store
@@ -36,7 +36,7 @@ FilmtipsetExtension.ExtensionHost.prototype.track = function(
 FilmtipsetExtension.ExtensionHost.prototype.initLocalStorage = function(){
     localStorage.accessKey = "xtyrZqwjC7I1AVrX5e0TOw";
     if (!localStorage.userKey) {
-        chrome.tabs.create({ url: "personal.html", selected: true });
+        chrome.tabs.create({ url: "extension-pages/personal.html", selected: true });
         }
     };
 
@@ -82,7 +82,7 @@ FilmtipsetExtension.ExtensionHost.prototype.activateImdbPage = function(
     film.getInfoForImdbId(
         imdbId,
         function(movieInfo) {
-            var gradeInfo = film.getGradeInfo(movieInfo);
+            var gradeInfo = film.getGradeInfoMovie(movieInfo);
             tips.gradeForTab["tab" + tabId] = gradeInfo;
             var common = new FilmtipsetExtension.Common();
             var iconUrl = common.getIconFromGradeInfo(gradeInfo);
@@ -121,7 +121,7 @@ FilmtipsetExtension.ExtensionHost.prototype.initRequestListener = function(){
             film.getInfoForImdbId(
                 '' + request.imdbId,
                 function(movieInfo) {
-                    var gradeInfo = film.getGradeInfo(movieInfo);
+                    var gradeInfo = film.getGradeInfoMovie(movieInfo);
                     var common = new FilmtipsetExtension.Common();
                     var iconUrl = common.getIconFromGradeInfo(gradeInfo);
                     callback({ 
@@ -132,17 +132,20 @@ FilmtipsetExtension.ExtensionHost.prototype.initRequestListener = function(){
                     }
                 );
         } else if (request.action === "gradeForLinkText") {
-            var film = new FilmtipsetExtension.FilmtipsetApi(
+            var film2 = new FilmtipsetExtension.FilmtipsetApi(
                 localStorage.accessKey, 
                 localStorage.userKey, 
                 filmtips.cache, 
                 filmtips.log
                 );
-            film.searchExact(
+            film2.searchExact(
                 '' + request.imdbId, // HACK
                 function(movieInfos) {
-                    var movieInfo = movieInfos.length > 0 && movieInfos[0].movie ? movieInfos[0].movie : {}; // HACK
-                    var gradeInfo = film.getGradeInfoMovie(movieInfo);
+                    var movieInfo = 
+                        movieInfos.length > 0 
+                            ? movieInfos[0] 
+                            : {}; // HACK
+                    var gradeInfo = film2.getGradeInfoMovie(movieInfo);
                     var common = new FilmtipsetExtension.Common();
                     var iconUrl = common.getIconFromGradeInfo(gradeInfo);
                     callback({ 

@@ -6,7 +6,7 @@
 FilmtipsetExtension.Imdb = function (href){
     this.href = href;
     this.common = new FilmtipsetExtension.Common();
-    }
+    };
 
 FilmtipsetExtension.Imdb.prototype.init = function(){
     var imdbId = this.common.getImdbIdFromUrl(this.href);

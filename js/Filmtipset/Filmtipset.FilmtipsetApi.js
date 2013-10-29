@@ -1,8 +1,13 @@
 "use strict";
 
 /**
+ * Filmtipset API client.
  * @constructor
- */
+ * @param {string} accessKey Application-specific access key for Filmtipset API.
+ * @param {string} userKey User-specific user key for Filmtipset API.
+ * @param {Object} cache Cache instance used by API. Must implement Monsur cache methods and properties.
+ * @param {Object} logger Logger instance used by API. Must implement log(msg) method.
+*/
 FilmtipsetExtension.FilmtipsetApi = function (
         accessKey, 
         userKey, 
@@ -13,29 +18,83 @@ FilmtipsetExtension.FilmtipsetApi = function (
     this.userKey = userKey;
     this.cache = cache;
     this.logger = logger;
-    }
+    };
 
+/**
+ * Base URL for Filmtipset API.
+ * @const
+ * @type {string}
+ */
 FilmtipsetExtension.FilmtipsetApi.filmtipsetApiCgi = "http://www.filmtipset.se/api/api.cgi";
+
+/**
+ * URL template for getting movie info using its IMDB ID.
+ * @const
+ * @type {string}
+ */
 FilmtipsetExtension.FilmtipsetApi.url_template_imdb = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=imdb&id=%imdbId%";
+
+/**
+ * URL template for getting movie infos using a title search string.
+ * @const
+ * @type {string}
+ */
 FilmtipsetExtension.FilmtipsetApi.url_template_search = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=search&id=%query%";
+
+/**
+ * URL template for grading a movie using its Filmtipset ID.
+ * @const
+ * @type {string}
+ */
 FilmtipsetExtension.FilmtipsetApi.url_template_grade = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=grade&id=%filmtipsetMovieId%&grade=%grade%";
+
+/**
+ * URL template for getting a user's want-to-see-list.
+ * @const
+ * @type {string}
+ */
 FilmtipsetExtension.FilmtipsetApi.url_template_get_wanted = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=list&id=wantedlist";
+
+/**
+ * URL template for adding a movie to a user's want-to-see-list using its Filmtipset ID.
+ * @const
+ * @type {string}
+ */
 FilmtipsetExtension.FilmtipsetApi.url_template_add_to_wanted = "%filmtipsetApiCgi%?accesskey=%accessKey%&userkey=%userKey%&returntype=json&action=add-to-list&id=wantedlist&movie=%filmtipsetMovieId%";
-    
+
+/**
+ * Validates a user-specific API User Key for the Filmtipset API by getting the user's want-to-see-list.
+ * @param {string} userKeyToValidate User-specific API User Key to validate.
+ * @param {function(boolean)} callback Function to run upon completion. 
+ *     Input parameter to function will be whether validation succeeded.
+ */
 FilmtipsetExtension.FilmtipsetApi.prototype.validateUserKey = function(
         userKeyToValidate, 
         callback
         ) {
-        var result = this.getWantedList(function(data){
+    var url = 
+        FilmtipsetExtension.FilmtipsetApi.url_template_get_wanted
+        .replace("%filmtipsetApiCgi%", FilmtipsetExtension.FilmtipsetApi.filmtipsetApiCgi)
+        .replace("%accessKey%", this.accessKey)
+        .replace("%userKey%", this.userKey);
+    this.xmlHttpRequest(
+        url, 
+        function(getWantedListResponse){
             var userKeyWasValid = 
-                data[0] &&
-                data[0].user && 
-                data[0].user.id
-                ; 
+                getWantedListResponse[0] &&
+                getWantedListResponse[0].user && 
+                getWantedListResponse[0].user.id; 
             callback(userKeyWasValid);
-            });
-    }
+            }
+        );
+    };
 
+/**
+ * Gets a user's want-to-see-list.
+ * @param {function(Array)} callback Function to run upon completion. 
+ *     Input parameter to function will be array of Filmtipset Movies 
+ *     with user's wanted list.
+ */
 FilmtipsetExtension.FilmtipsetApi.prototype.getWantedList = function(callback) {
     var url = 
         FilmtipsetExtension.FilmtipsetApi.url_template_get_wanted
@@ -45,12 +104,27 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getWantedList = function(callback) {
         ;
     this.xmlHttpRequest(
         url, 
-        callback, 
-        true,
-        this.logger
+        function(getWantedResponse){
+            callback(
+                getWantedResponse
+                    [0] // Response array only has one element
+                    .data // .data contains the Wanted List, the rest is metadata (.request, .user etc)
+                    [0] // Data array only has one element
+                    .movies // .movies contains the Filmtipset Movies, the rest is metadata (.count, .title etc)
+                    .select(function(x){ // Project a new array from the Filmtipset Movie array
+                        return x.movie; // Each Filmtipset Movie has all its data in .movie
+                        })
+                );
+            } 
         );
     };
 
+/**
+ * Adds a movie to a user's want-to-see-list.
+ * @param {string} filmtipsetMovieId Filmtipset ID of movie to add. 
+ * @param {function(Array)} callback Function to run upon completion. 
+ *     Input parameter to function will be new wanted list array.
+ */
 FilmtipsetExtension.FilmtipsetApi.prototype.addToWantedListForFilmtipsetId = function(
         filmtipsetMovieId, 
         callback
@@ -64,18 +138,35 @@ FilmtipsetExtension.FilmtipsetApi.prototype.addToWantedListForFilmtipsetId = fun
         ;
     this.xmlHttpRequest(
         url, 
-        callback, 
-        true,
-        this.logger
+        function(addToWantedResponse){
+            callback(
+                addToWantedResponse
+                    [0] // Response array only has one element
+                    .data // .data contains the Wanted List, the rest is metadata (.request, .user etc)
+                    [0] // Data array only has one element
+                    .movies // .movies contains the Filmtipset Movies, the rest is metadata (.count, .title etc)
+                    .select(function(x){ // Project a new array from the Filmtipset Movie array
+                        return x.movie; // Each Filmtipset Movie has all its data in .movie
+                        })
+                );
+            }
         );
     };
 
+/**
+ * Grades a movie for a user.
+ * @param {string} imdbId IMDB ID of movie. 
+ * @param {number} grade Grade. 0 for "no grade" or 1-5 for grades. 
+ * @param {function(Object)} callback Function to run upon completion. 
+ *     Input parameter to function will be updated Filmtipset Movie info,
+ *     or null on error.
+ */
 FilmtipsetExtension.FilmtipsetApi.prototype.gradeForImdbId = function(
         imdbId, 
         grade, 
         callback
         ) {
-    this.getInfoForImdbId(
+    this.getInfoForImdbId( // First, get the Filmtipset ID for this movie.
         imdbId,
         function(movieInfo) {
             var gradeInfo = this.getGradeInfo(movieInfo); 
@@ -83,7 +174,9 @@ FilmtipsetExtension.FilmtipsetApi.prototype.gradeForImdbId = function(
                 this.gradeForFilmtipsetId(
                     gradeInfo.id, 
                     grade, 
-                    callback
+                    function(updatedMovieResponse){
+                        callback(updatedMovieResponse);
+                        }
                     );
                 }
             else {
@@ -93,6 +186,14 @@ FilmtipsetExtension.FilmtipsetApi.prototype.gradeForImdbId = function(
         );
     };    
 
+/**
+ * Grades a movie for a user.
+ * @param {string} filmtipsetMovieId Filmtipset ID of movie. 
+ * @param {number} grade Grade. 0 for "no grade" or 1-5 for grades. 
+ * @param {function(Object)} callback Function to run upon completion. 
+ *     Input parameter to function will be updated Filmtipset Movie info,
+ *     or null on error.
+ */
 FilmtipsetExtension.FilmtipsetApi.prototype.gradeForFilmtipsetId = function(
         filmtipsetMovieId, 
         grade, 
@@ -103,19 +204,25 @@ FilmtipsetExtension.FilmtipsetApi.prototype.gradeForFilmtipsetId = function(
     var url = 
         FilmtipsetExtension.FilmtipsetApi.url_template_grade
         .replace("%filmtipsetApiCgi%", FilmtipsetExtension.FilmtipsetApi.filmtipsetApiCgi)
-        .replace("%grade%", grade)
+        .replace("%grade%", grade.toString())
         .replace("%filmtipsetMovieId%", filmtipsetMovieId)
         .replace("%accessKey%", this.accessKey)
         .replace("%userKey%", this.userKey)
         ;
     this.xmlHttpRequest(
         url, 
-        function(data) { callback(data); }, 
-        true,
-        this.logger
+        function(updatedMovieResponse) { 
+            callback(updatedMovieResponse[0].data[0].movie); 
+            }
         );
     };
 
+/**
+ * Find movies whose titles match a query.
+ * @param {string} query Query to search for. 
+ * @param {function(Array)} callback Function to run upon completion. 
+ *     Input parameter to function will be array of Filmtipset Movies.
+ */
 FilmtipsetExtension.FilmtipsetApi.prototype.search = function(
         query, 
         callback
@@ -136,15 +243,26 @@ FilmtipsetExtension.FilmtipsetApi.prototype.search = function(
     var cache = this.cache;
     this.xmlHttpRequest(
         url, 
-        function(data) {
-            cache.setItem(key, data);
-            callback(data);
-            },                 
-        true,
-        this.logger
+        function(searchResponse) {
+            var hits = 
+                searchResponse[0]
+                .data[0]
+                .hits
+                .select(function(hit){
+                    return hit.movie;
+                    });
+            cache.setItem(key, hits); 
+            callback(hits);
+            }                 
         );
     };
 
+/**
+ * Returns all elements matching a predicate.
+ * @param {function(*)} predicate Predicate function. 
+ *     Input parameter will be element under test. 
+ * @return {Array} Reduced array.
+ */
 Array.prototype.where = function(predicate){
     var ret = [];
     this.forEach(function(x){
@@ -155,6 +273,26 @@ Array.prototype.where = function(predicate){
     return ret;
     };
 
+/**
+ Projects elements in an array onto a new array using a projector function.
+ @param {function(*)} projector Projector function. 
+     Input parameter is element in array.
+ @return {Array} Projected array. 
+ */
+Array.prototype.select = function(projector){
+    var ret = [];
+    this.forEach(function(x){
+        ret.push(projector(x));
+        });
+    return ret;
+    };
+    
+/**
+ * Find movies whose original or Swedish titles exactly match a query.
+ * @param {string} query Query to search for. 
+ * @param {function(Array)} callback Function to run upon completion. 
+ *     Input parameter to function will be array of Filmtipset Movies.
+ */
 FilmtipsetExtension.FilmtipsetApi.prototype.searchExact = function(
         query, 
         callback
@@ -162,17 +300,22 @@ FilmtipsetExtension.FilmtipsetApi.prototype.searchExact = function(
     this.search(
         query, 
         function(results){
-            var exactResults = results[0].data[0].hits.where(function(result){
-                var exactResult = 
-                    result.movie.orgname == query ||
-                    result.movie.name == query                       
-                return exactResult;
+            var exactResults = results.where(function(result){
+                var isExactResult = 
+                    result.orgname == query ||
+                    result.name == query; // TODO: Search alt_title.split(',') as well?                       
+                return isExactResult;
                 });
             callback(exactResults);
             }
         );
-    }
-    
+    };
+
+/**
+ Gets movie info.
+ @param {string} imdbId IMDB ID.
+ @param {function(Object)} callback Function to run with Filmtipset Movie result.
+ */    
 FilmtipsetExtension.FilmtipsetApi.prototype.getInfoForImdbId = function(
         imdbId, 
         callback
@@ -194,16 +337,25 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getInfoForImdbId = function(
     var cache = this.cache;
     this.xmlHttpRequest(
         url, 
-        function(data) {
+        function(response) {
+            if (!response || response.length == 0 || !response[0] || !response[0].data || response[0].data.length == 0 || !response[0].data[0]){
+                callback(null);
+                return;
+                }
+            var data = response[0].data[0].movie;
             // Cache this Filmtipset info for this IMDB ID
             cache.setItem(key, data);
             callback(data);
-            },                 
-        true,
-        this.logger
+            }                 
         );
     };
 
+/**
+ * Determines the grade and grade type for a Filmtipset Movie Info Response.
+ * @param {Object} json Filmtipset Movie Info Response
+ * @return {Object|null} Object with .grade, .type and .id for movie. 
+ *     Or null on error.
+ */
 FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfo = function(json) {
     if (
         json && 
@@ -212,26 +364,9 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfo = function(json) {
         json[0].data.length > 0
         ) {
         if (json[0].data[0].movie) {
-            var id = json[0].data[0].movie.id; // undefined, "1234"
-            if (id) {
-                var grade = json[0].data[0].movie.grade;
-                if (grade) {
-                    var gradevalue = grade.value; // null, "1", "2", "3", "4", "5"
-                    var gradetype = grade.type; // "none", "seen", "calculated"
-                    var gradeAndType = 
-                    {
-                        "grade": gradevalue,
-                        "type": gradetype,
-                        "id": id
-                    };
-                    return gradeAndType;
-                    } else {
-                        // No grade available
-                    }
-                } else {
-                    // Unknown movie
-                }
-            } else {
+            return this.getGradeInfoMovie(json[0].data[0].movie);
+            } 
+            else {
                 // No movie (bad response?)
             }
         } else {
@@ -240,53 +375,55 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfo = function(json) {
     return null;
     };
 
-FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfoMovie = function(json) { // HACK
-    if (true) {
-        if (true) {
-            var id = json.id; // undefined, "1234"
-            if (id) {
-                var grade = json.grade;
-                if (grade) {
-                    var gradevalue = grade.value; // null, "1", "2", "3", "4", "5"
-                    var gradetype = grade.type; // "none", "seen", "calculated"
-                    var gradeAndType = 
-                    {
-                        "grade": gradevalue,
-                        "type": gradetype,
-                        "id": id
-                    };
-                    return gradeAndType;
-                    } else {
-                        // No grade available
-                    }
-                } else {
-                    // Unknown movie
-                }
-            } else {
-                // No movie (bad response?)
+/**
+ * Determines the grade and grade type for a Filmtipset Movie.
+ * @param {Object} movie Filmtipset Movie 
+ * @return {Object|null} Object with .grade, .type and .id for movie.
+ *     Or null on error.
+ */
+FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfoMovie = function(movie) { 
+    if (!movie) {
+        return null;
+        }
+    var id = movie.id; // undefined, "1234"
+    if (id) {
+        var grade = movie.grade;
+        if (grade) {
+            var gradevalue = grade.value; // null, "1", "2", "3", "4", "5"
+            var gradetype = grade.type; // "none", "seen", "calculated"
+            var gradeAndType = 
+            {
+                "grade": gradevalue,
+                "type": gradetype,
+                "id": id
+            };
+            return gradeAndType;
+            } 
+            else {
+                // No grade available
             }
-        } else {
-            // Unknown movie (or bad response)
+        } 
+        else {
+            // Unknown movie
         }
     return null;
     };
 
+/**
+ * GETs an URL.
+ * @param {string} url Request URL. 
+ * @param {function(*)} callback Function to call upon completion. 
+ *     Input parameter will be response for request to URL, or null upon any error. 
+ */
 FilmtipsetExtension.FilmtipsetApi.prototype.xmlHttpRequest = function(
         url, 
-        callback, 
-        json, 
-        logger
+        callback
         ) {
     var req = new XMLHttpRequest();
     req.onload = function() {
         if (req.readyState === 4) {
             if (req.status === 200) {
-                if (json) {
-                    callback(JSON.parse(req.responseText));
-                    }
-                else {
-                    callback(req.responseText);
-                    }
+                callback(JSON.parse(req.responseText));
                 } 
             else {
                 callback(null);
