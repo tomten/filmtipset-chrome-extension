@@ -251,12 +251,28 @@ FilmtipsetExtension.FilmtipsetApi.prototype.search = function(
                 .select(function(hit){
                     return hit.movie;
                     });
-            cache.setItem(key, hits); 
+            cache.setItem(
+                key, 
+                hits/*, 
+                { expirationAbsolute: (new Date()).addDays(3) } // Save search results for 3 days
+                */); 
             callback(hits);
             }                 
         );
     };
 
+/**
+ Add a number of days to a Date.
+ @param {number} days Number of days to add to Date.
+ @return {Date} Date with days added.
+ */
+Date.prototype.addDays = function(days)
+{
+    var dat = new Date(this.valueOf());
+    dat.setDate(dat.getDate() + days);
+    return dat;
+};    
+    
 /**
  * Returns all elements matching a predicate.
  * @param {function(*)} predicate Predicate function. 
@@ -338,13 +354,16 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getInfoForImdbId = function(
     this.xmlHttpRequest(
         url, 
         function(response) {
-            if (!response || response.length == 0 || !response[0] || !response[0].data || response[0].data.length == 0 || !response[0].data[0]){
+            if (!response || response.length === 0 || !response[0] || !response[0].data || response[0].data.length === 0 || !response[0].data[0]){
                 callback(null);
                 return;
                 }
             var data = response[0].data[0].movie;
-            // Cache this Filmtipset info for this IMDB ID
-            cache.setItem(key, data);
+            cache.setItem(
+                key, 
+                data/*,
+                { expirationAbsolute: (new Date()).addDays(7) } // Save Filmtipset movie info for a week
+                */);
             callback(data);
             }                 
         );
