@@ -3,23 +3,24 @@
     "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
     "name": "__MSG_extensionName__",
     "short_name": "__MSG_extensionShortName__",
-    "version": "2.4",
+    "version": "2.5",
     "web_accessible_resources": [  
-        "filmtipset.html.js",
-        "grade.html.js",
-        "personal.html.js",
-        "imdb.js",
-        "other.js",
-        "cache.js",
-        "Filmtipset.js",
-        "Filmtipset.Common.js",
-        "Filmtipset.ExtensionHost.js",
-        "Filmtipset.FilmtipsetApi.js",
-        "Filmtipset.Imdb.js",
-        "jquery-1.10.2.min.js",
-        "jquery.regex.js",
-        "jquery.tipTip.minified.js",
-        "Filmtipset.Links.js",
+        "extension-pages/filmtipset.html.js",
+        "extension-pages/grade.html.js",
+        "extension-pages/personal.html.js",
+        "content-scripts/imdb.js",
+        "content-scripts/other.js",
+        "content-scripts/googlemovies.js",
+        "js/cache.js",
+        "js/Filmtipset/Filmtipset.js",
+        "js/Filmtipset/Filmtipset.Common.js",
+        "js/Filmtipset/Filmtipset.ExtensionHost.js",
+        "js/Filmtipset/Filmtipset.FilmtipsetApi.js",
+        "js/Filmtipset/Filmtipset.Imdb.js",
+        "content-scripts/jquery-1.10.2.min.js",
+        "content-scripts/jquery.regex.js",
+        "content-scripts/jquery.tipTip.minified.js",
+        "js/Filmtipset/Filmtipset.Links.js",
         "images/progress.png",
         "images/grade/1grade.png",
         "images/grade/1gradeactive.png",
@@ -51,38 +52,51 @@
         "48": "images/icons/48.png",
         "128": "images/icons/128.png" 
     },
-    "background": { "page": "filmtipset.html" },
+    "background": { "page": "extension-pages/filmtipset.html" },
     "page_action": {
         "default_icon": "images/pageactions/unknown.png",
-        "default_popup": "grade.html"
+        "default_popup": "extension-pages/grade.html"
     },
-    "options_page": "personal.html",
+    "options_page": "extension-pages/personal.html",
     "content_scripts": [
+        {
+            "matches": [ "http://*.google.se/movies?*" ],
+            "js": [ 
+                "content-scripts/jquery-1.10.2.min.js",
+                "content-scripts/jquery.regex.js", 
+                "content-scripts/jquery.tipTip.minified.js", 
+                "js/Filmtipset/Filmtipset.js",
+                "js/Filmtipset/Filmtipset.Common.js",
+                "js/Filmtipset/Filmtipset.Links.js",
+                "content-scripts/googlemovies.js"
+            ],
+            "run_at": "document_start"
+        },
         {
             "matches": [ "http://*.imdb.com/*" ],
             "js": [ 
-                "jquery-1.10.2.min.js",
-                "jquery.regex.js", 
-                "jquery.tipTip.minified.js", 
-                "Filmtipset.js",
-                "Filmtipset.Common.js",
-                "Filmtipset.Imdb.js",
-                "Filmtipset.Links.js",
-                "imdb.js"
+                "content-scripts/jquery-1.10.2.min.js",
+                "content-scripts/jquery.regex.js", 
+                "content-scripts/jquery.tipTip.minified.js", 
+                "js/Filmtipset/Filmtipset.js",
+                "js/Filmtipset/Filmtipset.Common.js",
+                "js/Filmtipset/Filmtipset.Imdb.js",
+                "js/Filmtipset/Filmtipset.Links.js",
+                "content-scripts/imdb.js"
             ],
             "run_at": "document_start"
         },
         {
             "matches": [ "http://*/*", "https://*/*" ],
-            "css": [ "other.css", "tipTip.css" ],
+            "css": [ "content-scripts/other.css", "content-scripts/tipTip.css" ],
             "js": [ 
-                "jquery-1.10.2.min.js",
-                "jquery.regex.js", 
-                "jquery.tipTip.minified.js", 
-                "Filmtipset.js", 
-                "Filmtipset.Common.js", 
-                "Filmtipset.Links.js",
-                "other.js"
+                "content-scripts/jquery-1.10.2.min.js",
+                "content-scripts/jquery.regex.js", 
+                "content-scripts/jquery.tipTip.minified.js", 
+                "js/Filmtipset/Filmtipset.js", 
+                "js/Filmtipset/Filmtipset.Common.js", 
+                "js/Filmtipset/Filmtipset.Links.js",
+                "content-scripts/other.js"
             ],
             "run_at": "document_start"
         }
