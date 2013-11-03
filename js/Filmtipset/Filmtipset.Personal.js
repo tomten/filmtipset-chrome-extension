@@ -57,7 +57,9 @@ FilmtipsetExtension.Personal.prototype.saveOptions = function() {
     var userKeyToValidate = $userKey.val();
     var film = new FilmtipsetExtension.FilmtipsetApi(
         localStorage.accessKey, // HACK
-        userKeyToValidate
+        userKeyToValidate,
+        null, // No need for cache here
+        null // No nee for logger here
         );
     var self = this;
     film.validateUserKey(

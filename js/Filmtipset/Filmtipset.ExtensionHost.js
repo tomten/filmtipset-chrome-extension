@@ -7,9 +7,10 @@
 FilmtipsetExtension.ExtensionHost = function(gaq){
     this.gaq = gaq;        
     this.cache = new Cache(
-        -1, // Maximum size of cache = maximum size of Local Storage 
-        false, // Debug = false
-        new Cache.LocalStorageCacheStorage()); // Use this extension's Local Storage for persisting the cache
+        -1, // Maximum size of cache = maximum size of storage medium 
+        false, // Debug?
+        new Cache.LocalStorageCacheStorage("filmtipset2.5")); // Use this extension's Local Storage for persisting the cache
+    // TODO: When to clear out obsolete caches?
     this.gradeForTab = {}; // Session-scoped storage for the current page action grades for different browser tabs
     this.wantedList = undefined; // Session-scoped storage for items in the user's Filmtipset Wanted List
     };

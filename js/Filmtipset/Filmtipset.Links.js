@@ -96,10 +96,11 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
             var $link = self.jQuery("a[fakeid='%fakeid%']:first".replace("%fakeid%", fakeId));
             if (
                 fakeIdAndGrade.movieInfo &&
+                fakeIdAndGrade.movieInfo.name /*&&
                 fakeIdAndGrade.movieInfo[0] &&
                 fakeIdAndGrade.movieInfo[0].data &&
                 fakeIdAndGrade.movieInfo[0].data[0] &&
-                fakeIdAndGrade.movieInfo[0].data[0].movie 
+                fakeIdAndGrade.movieInfo[0].data[0].movie */
                 )
                 $link.tipTip({ 
                     delay: 1, 
@@ -107,18 +108,18 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
                     fadeIn: 100, 
                     fadeOut: 400, 
                     edgeOffset: 0,
-                    keepAlive: true,
+                    keepAlive: false,
                     content: 
                         FilmtipsetExtension.Links.popover_html_template
-                            .replace("%description%", fakeIdAndGrade.movieInfo[0].data[0].movie.description)
-                            .replace("%title%", fakeIdAndGrade.movieInfo[0].data[0].movie.name)
-                            .replace("%imgUrl%", fakeIdAndGrade.movieInfo[0].data[0].movie.image)
-                            .replace("%url%", fakeIdAndGrade.movieInfo[0].data[0].movie.url)
+                            .replace("%description%", fakeIdAndGrade.movieInfo.description || "")
+                            .replace("%title%", fakeIdAndGrade.movieInfo.name)
+                            .replace("%imgUrl%", fakeIdAndGrade.movieInfo.image)
+                            .replace("%url%", fakeIdAndGrade.movieInfo.url)
                     });
             var $gradeImage = self.jQuery(FilmtipsetExtension.Links.image_html_template.replace("%grade%", gradeUrl));
             $gradeImage.hide();
             $link.append($gradeImage);
-            $gradeImage.fadeIn(100); 
+            $gradeImage.fadeIn(200); 
             if (fakeId >= self.$links.length - 1) { // HACK: Should be == something
                 self.jQuery("#filmtipsetImdbLinks").stop().fadeOut(1000);
                 }

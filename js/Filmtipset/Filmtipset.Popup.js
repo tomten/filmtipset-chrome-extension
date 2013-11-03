@@ -2,7 +2,7 @@
 
 /**
  * @constructor
- * @param {object} jQuery Reference to jQuery. Used for DOM manipulation.
+ * @param {Object} jQuery Reference to jQuery. Used for DOM manipulation.
  */
 FilmtipsetExtension.Popup = function (jQuery){
     this.jQuery = jQuery;
@@ -10,7 +10,7 @@ FilmtipsetExtension.Popup = function (jQuery){
 
 /**
  * Returns true if any element in the array matches the supplied predicate function.
- * @param {function} comparer Predicate function for matching an element.
+ * @param {function(*)} comparer Predicate function for matching an element.
  * @return {boolean} True if any element in the array matches the supplied predicate function.
  */
 Array.prototype.any = function(comparer){
@@ -138,7 +138,8 @@ FilmtipsetExtension.Popup.prototype.want = function() {
                     var film = new FilmtipsetExtension.FilmtipsetApi(
                         localStorage.accessKey, 
                         localStorage.userKey, 
-                        cache
+                        cache,
+                        null // no need for logger here
                         );
                     film.addToWantedListForFilmtipsetId(
                         currentGradeInfo.id, 
@@ -192,7 +193,9 @@ FilmtipsetExtension.Popup.prototype.doGrade = function(tab, grade) {
     var film = new FilmtipsetExtension.FilmtipsetApi(
         localStorage.accessKey, 
         localStorage.userKey, 
-        cache);
+        cache,
+        null // no need for logger here
+        );
     backgroundPage.filmtipset.log("apigrading " + grade + " for id " + currentGradeInfo.id);
     var popup = this;
     film.gradeForFilmtipsetId(

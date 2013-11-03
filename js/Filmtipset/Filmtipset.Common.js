@@ -11,6 +11,10 @@ FilmtipsetExtension.Common.prototype.getImdbIdFromUrl = function(url) {
     if (match) {
         if (match.length === 2) {
             var imdbId = match[1];
+            if (imdbId.length === 5)
+                imdbId = '00' + imdbId; // HACK
+            else if (imdbId.length === 6)
+                imdbId = '0' + imdbId; // HACK
             return imdbId;
         }
     }

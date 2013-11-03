@@ -25,7 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 // Avoid polluting the global namespace if we're using a module loader
-(function(){
+//(function(){
 
 /**
  * Creates a new Cache object.
@@ -421,12 +421,12 @@ Cache.prototype.log_ = function(msg) {
 // Establish the root object, `window` in the browser, or `global` on the server.
 var root = this;
 
-if (typeof module !== "undefined" && module.exports) {
+if (typeof(module) !== "undefined" && module.exports) {
   module.exports = Cache;
-} else if (typeof define == "function" && define.amd) {
+} else if (typeof(define) == "function" && define.amd) {
   define(function() { return Cache; });
 } else {
   root.Cache = Cache;
 }
 
-})();
+//})();

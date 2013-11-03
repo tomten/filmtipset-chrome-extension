@@ -200,7 +200,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.gradeForFilmtipsetId = function(
         callback
         ) {
     // Clear the cache since we're changing the Filmtipset info.
-    this.cache.clear();
+    this.cache.clear(); // HACK: Should not clear everything (eg. search results) here
     var url = 
         FilmtipsetExtension.FilmtipsetApi.url_template_grade
         .replace("%filmtipsetApiCgi%", FilmtipsetExtension.FilmtipsetApi.filmtipsetApiCgi)
@@ -253,9 +253,9 @@ FilmtipsetExtension.FilmtipsetApi.prototype.search = function(
                     });
             cache.setItem(
                 key, 
-                hits/*, 
+                hits, 
                 { expirationAbsolute: (new Date()).addDays(3) } // Save search results for 3 days
-                */); 
+                ); 
             callback(hits);
             }                 
         );
@@ -355,15 +355,19 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getInfoForImdbId = function(
         url, 
         function(response) {
             if (!response || response.length === 0 || !response[0] || !response[0].data || response[0].data.length === 0 || !response[0].data[0]){
+                cache.setItem(
+                    key, 
+                    { fake: true } // HACK: NULL should be cached, not a fake object
+                    );
                 callback(null);
                 return;
                 }
             var data = response[0].data[0].movie;
             cache.setItem(
                 key, 
-                data/*,
+                data,
                 { expirationAbsolute: (new Date()).addDays(7) } // Save Filmtipset movie info for a week
-                */);
+                );
             callback(data);
             }                 
         );
