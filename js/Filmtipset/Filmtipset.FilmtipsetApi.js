@@ -272,34 +272,44 @@ Date.prototype.addDays = function(days)
     dat.setDate(dat.getDate() + days);
     return dat;
 };    
-    
+
 /**
  * Returns all elements matching a predicate.
- * @param {function(*)} predicate Predicate function. 
+ * @param {function(?):boolean} predicate Predicate function. 
  *     Input parameter will be element under test. 
  * @return {Array} Reduced array.
  */
 Array.prototype.where = function(predicate){
     var ret = [];
-    this.forEach(function(x){
-        if (predicate(x) === true) {
-            ret.push(x);
+    this.forEach(
+        /**
+         @param {?} x Element under test.
+         */
+        function(x){
+            if (predicate(x) === true) {
+                ret.push(x);
+                }
             }
-        });
+        );
     return ret;
     };
 
 /**
  Projects elements in an array onto a new array using a projector function.
- @param {function(*)} projector Projector function. 
+ @param {function(?):?} projector Projector function. 
      Input parameter is element in array.
  @return {Array} Projected array. 
  */
 Array.prototype.select = function(projector){
     var ret = [];
-    this.forEach(function(x){
-        ret.push(projector(x));
-        });
+    this.forEach(
+        /**
+         @param {?} x Element to project.
+         */
+        function(x){
+            ret.push(projector(x));
+            }
+        );
     return ret;
     };
     
@@ -375,8 +385,8 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getInfoForImdbId = function(
 
 /**
  * Determines the grade and grade type for a Filmtipset Movie Info Response.
- * @param {Object} json Filmtipset Movie Info Response
- * @return {Object|null} Object with .grade, .type and .id for movie. 
+ * @param {?} json Filmtipset Movie Info Response
+ * @return {(FilmtipsetExtension.GradeInfo|null)} Object with .grade, .type and .id for movie. 
  *     Or null on error.
  */
 FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfo = function(json) {
@@ -400,8 +410,8 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfo = function(json) {
 
 /**
  * Determines the grade and grade type for a Filmtipset Movie.
- * @param {Object} movie Filmtipset Movie 
- * @return {Object|null} Object with .grade, .type and .id for movie.
+ * @param {?} movie Filmtipset Movie 
+ * @return {(FilmtipsetExtension.GradeInfo|null)} Object with .grade, .type and .id for movie.
  *     Or null on error.
  */
 FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfoMovie = function(movie) { 

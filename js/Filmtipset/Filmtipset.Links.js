@@ -65,11 +65,7 @@ FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selecto
             .hide() // Hide the progress bar and...
             .delay(2000) // ...wait 2 seconds before...
             .fadeIn(1000); // ...showing it (to avoid it showing it at all if possible)
-        var jQuery = this.jQuery;
-        var self = this;
-        //for (var currentLinkNumber = 0; currentLinkNumber < this.$links.length; currentLinkNumber++) {
-        this.processOneLink(0);//currentLinkNumber);
-        //    } 
+        this.processOneLink(0);
         }
     };
 
@@ -96,11 +92,7 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
             var $link = self.jQuery("a[fakeid='%fakeid%']:first".replace("%fakeid%", fakeId));
             if (
                 fakeIdAndGrade.movieInfo &&
-                fakeIdAndGrade.movieInfo.name /*&&
-                fakeIdAndGrade.movieInfo[0] &&
-                fakeIdAndGrade.movieInfo[0].data &&
-                fakeIdAndGrade.movieInfo[0].data[0] &&
-                fakeIdAndGrade.movieInfo[0].data[0].movie */
+                fakeIdAndGrade.movieInfo.name
                 )
                 $link.tipTip({ 
                     delay: 1, 

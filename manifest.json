@@ -3,7 +3,7 @@
     "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
     "name": "__MSG_extensionName__",
     "short_name": "__MSG_extensionShortName__",
-    "version": "2.5",
+    "version": "2.10",
     "web_accessible_resources": [  
         "extension-pages/filmtipset.html.js",
         "extension-pages/grade.html.js",
@@ -15,9 +15,11 @@
         "js/Filmtipset/Filmtipset.js",
         "js/Filmtipset/Filmtipset.Common.js",
         "js/Filmtipset/Filmtipset.ExtensionHost.js",
+        "js/Filmtipset/Filmtipset.ContentScriptRequest.js",
         "js/Filmtipset/Filmtipset.FilmtipsetApi.js",
         "js/Filmtipset/Filmtipset.Imdb.js",
-        "content-scripts/jquery-1.10.2.min.js",
+        "content-scripts/jquery-2.0.3.min.js",
+        "content-scripts/jquery-2.0.3.min.map",
         "content-scripts/jquery.regex.js",
         "content-scripts/jquery.tipTip.minified.js",
         "js/Filmtipset/Filmtipset.Links.js",
@@ -62,11 +64,12 @@
         {
             "matches": [ "http://*.google.se/movies?*" ],
             "js": [ 
-                "content-scripts/jquery-1.10.2.min.js",
+                "content-scripts/jquery-2.0.3.min.js",
                 "content-scripts/jquery.regex.js", 
                 "content-scripts/jquery.tipTip.minified.js", 
                 "js/Filmtipset/Filmtipset.js",
                 "js/Filmtipset/Filmtipset.Common.js",
+                "js/Filmtipset/Filmtipset.ContentScriptRequest.js",
                 "js/Filmtipset/Filmtipset.Links.js",
                 "content-scripts/googlemovies.js"
             ],
@@ -75,11 +78,12 @@
         {
             "matches": [ "http://*.imdb.com/*" ],
             "js": [ 
-                "content-scripts/jquery-1.10.2.min.js",
+                "content-scripts/jquery-2.0.3.min.js",
                 "content-scripts/jquery.regex.js", 
                 "content-scripts/jquery.tipTip.minified.js", 
                 "js/Filmtipset/Filmtipset.js",
                 "js/Filmtipset/Filmtipset.Common.js",
+                "js/Filmtipset/Filmtipset.ContentScriptRequest.js",
                 "js/Filmtipset/Filmtipset.Imdb.js",
                 "js/Filmtipset/Filmtipset.Links.js",
                 "content-scripts/imdb.js"
@@ -90,11 +94,12 @@
             "matches": [ "http://*/*", "https://*/*" ],
             "css": [ "content-scripts/other.css", "content-scripts/tipTip.css" ],
             "js": [ 
-                "content-scripts/jquery-1.10.2.min.js",
+                "content-scripts/jquery-2.0.3.min.js",
                 "content-scripts/jquery.regex.js", 
                 "content-scripts/jquery.tipTip.minified.js", 
                 "js/Filmtipset/Filmtipset.js", 
                 "js/Filmtipset/Filmtipset.Common.js", 
+                "js/Filmtipset/Filmtipset.ContentScriptRequest.js",
                 "js/Filmtipset/Filmtipset.Links.js",
                 "content-scripts/other.js"
             ],

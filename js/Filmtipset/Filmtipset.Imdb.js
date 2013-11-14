@@ -2,6 +2,7 @@
 
 /**
  * @constructor
+ * @param {string} href IMDB URL.
  */
 FilmtipsetExtension.Imdb = function (href){
     this.href = href;

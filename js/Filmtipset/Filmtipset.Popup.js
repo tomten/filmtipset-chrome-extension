@@ -26,7 +26,7 @@ Array.prototype.any = function(comparer){
     
 /**
  * Draws the buttons in the popup.
- * @param {tab} Active tab.
+ * @param {{ id: number }} tab Active tab.
  */
 FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
     var backgroundPage = chrome.extension.getBackgroundPage(); // HACK: Use sendRequest 
@@ -48,12 +48,12 @@ FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
             if (i == currentGradeInfo.grade) {
                 voteDiv = this.jQuery(
                     '<div grade="%i%" class="voteimage grade"><img alt="%i%" src="%gradeImgUrl%" /></div>'
-                        .replace('%i%', i)
+                        .replace('%i%', i.toString())
                         .replace(
                             '%gradeImgUrl%', 
                             chrome.extension.getURL(
                                 'images/grade/%i%gradeactive.png'
-                                    .replace('%i%', i)
+                                    .replace('%i%', i.toString())
                                 )
                             )
                     );
@@ -61,12 +61,12 @@ FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
             else {
                 voteDiv = this.jQuery(
                     '<div grade="%i%" class="voteimage grade"><img alt="%i%" src="%gradeImgUrl%" /></div>'
-                        .replace('%i%', i)
+                        .replace('%i%', i.toString())
                         .replace(
                             '%gradeImgUrl%', 
                             chrome.extension.getURL(
                                 'images/grade/%i%grade.png'
-                                    .replace('%i%', i)
+                                    .replace('%i%', i.toString())
                                 )
                             )
                     );

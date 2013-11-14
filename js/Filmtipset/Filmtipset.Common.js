@@ -5,6 +5,11 @@
  */
 FilmtipsetExtension.Common = function (){};
 
+/**
+ * Extracts the IMDB ID from an IMDB URL.
+ * @param {string} url IMDB URL.
+ * @return {string|null} IMDB ID, or null.
+ */
 FilmtipsetExtension.Common.prototype.getImdbIdFromUrl = function(url) {
     var re = /\/tt(\d+)\D/i;
     var match = url.match(re);
@@ -21,10 +26,19 @@ FilmtipsetExtension.Common.prototype.getImdbIdFromUrl = function(url) {
     return null;
 };
 
+/**
+ * Log.
+ * @param {string} message Message.
+ */
 FilmtipsetExtension.Common.prototype.log = function(message) {
     chrome.extension.getBackgroundPage().log(message); 
 }; 
 
+/**
+ * Determines the grade icon URL for a Grade Info.
+ * @param {FilmtipsetExtension.GradeInfo} gradeInfo Grade Info.
+ * @return {string} Grade icon URL.
+ */
 FilmtipsetExtension.Common.prototype.getIconFromGradeInfo = function(gradeInfo) {
     var iconUrl;
     if (!gradeInfo) {
@@ -43,6 +57,11 @@ FilmtipsetExtension.Common.prototype.getIconFromGradeInfo = function(gradeInfo) 
     return iconUrl;
 };
 
+/**
+ * Determines the proper page action title for a Grade Info.
+ * @param {FilmtipsetExtension.GradeInfo} gradeInfo Grade Info.
+ * @return {string} Page action title.
+ */
 FilmtipsetExtension.Common.prototype.getTitleFromGradeInfo = function(gradeInfo) {
     var title;
     if (!gradeInfo) {
@@ -60,3 +79,23 @@ FilmtipsetExtension.Common.prototype.getTitleFromGradeInfo = function(gradeInfo)
     }
     return title;
 };
+
+
+
+
+
+
+
+/**
+ @constructor
+ @param {string} type Grade type ("seen", ...).
+ @param {number} grade Grade value (0-5).
+ */
+FilmtipsetExtension.GradeInfo = function(
+        type, 
+        grade
+        ){
+    this.type = type;
+    this.grade = grade;
+    };
+
