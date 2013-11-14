@@ -3,6 +3,10 @@ filmtipset-chrome-extension
 
 Chrome Extension for Filmtipset movie site. Released version available in Chrome Web Store: https://chrome.google.com/webstore/detail/filmtipset/faajjfnpkdjpceeodjnmhdphbgehjeji
 
+Version 2.10:
+
+- ?
+
 Version 2.5:
 
 - Google Movies support for countries without IMDB links in showtime results
