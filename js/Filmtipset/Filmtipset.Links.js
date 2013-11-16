@@ -80,11 +80,14 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
     var common = new FilmtipsetExtension.Common();
     var imdbIdt = common.getImdbIdFromUrl(href);
     chrome.extension.sendRequest(
-        { 
-            action: imdbIdt ? "gradeForLink" : "gradeForLinkText", // HACK 
-            fakeId: currentLinkNumber, 
-            imdbId: imdbIdt || $a.html() // HACK
-            }, 
+        new FilmtipsetExtension.ContentScriptRequest(
+            imdbIdt ? "gradeForLink" : "gradeForLinkText", // HACK, 
+            null, 
+            new FilmtipsetExtension.ContentScriptRequest.ImdbData(
+                imdbIdt || $a.text(), // HACK, 
+                currentLinkNumber
+                )
+            ),
         function(fakeIdAndGrade) {
             var fakeId = fakeIdAndGrade.fakeId;
             var grade = fakeIdAndGrade.grade;
