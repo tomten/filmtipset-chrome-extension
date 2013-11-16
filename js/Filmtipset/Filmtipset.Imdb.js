@@ -16,7 +16,7 @@ FilmtipsetExtension.Imdb.prototype.init = function(){
             new FilmtipsetExtension.ContentScriptRequest(
                 "activateImdbPage", 
                 null, 
-                new FilmtipsetExtension.ContentScriptRequest.ImdbData(imdbId, fakeId)
+                new FilmtipsetExtension.ContentScriptRequest.ImdbData(imdbId, null)
                 )
             );
         chrome.extension.sendRequest(
