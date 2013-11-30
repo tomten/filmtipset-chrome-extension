@@ -64,7 +64,7 @@ FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selecto
         this.jQuery("#filmtipsetImdbLinks")
             .hide() // Hide the progress bar and...
             .delay(2000) // ...wait 2 seconds before...
-            .fadeIn(1000); // ...showing it (to avoid it showing it at all if possible)
+            .slideDown(500, "linear", function(){}); // ...showing it (to avoid it showing it at all if possible)
         this.processOneLink(0);
         }
     };
@@ -116,14 +116,14 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
             $link.append($gradeImage);
             $gradeImage.fadeIn(200); 
             if (fakeId >= self.$links.length - 1) { // HACK: Should be == something
-                self.jQuery("#filmtipsetImdbLinks").stop().fadeOut(1000);
+                self.jQuery("#filmtipsetImdbLinks").stop().slideUp(500, "linear", function(){});
                 }
             else {
                 var $linkCount = self.jQuery("#filmLinkCount");
                 var linksLeft = parseInt($linkCount.html(), 10);
                 linksLeft--;
                 $linkCount.html(linksLeft);
-                setTimeout( // TODO: this.setTimeout? self.setTimeout? self.window.setTimeout?
+                window.setTimeout( 
                     function(){
                         self.processOneLink(currentLinkNumber + 1);
                         }, 

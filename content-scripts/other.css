@@ -1,9 +1,8 @@
-﻿#filmtipsetImdbLinks 
-{
-	/* background-image: url(' + chrome.extension.getURL("images/progress.png") + '); */
+﻿#filmtipsetImdbLinks {
 	z-index: 12345;
-	left: 100px;
-	top: 100px;
+	left: 0px;
+    box-shadow: 0px 0px 50px 20px #ff0;
+	bottom: 0px;
 	position: fixed;
 	height: 31px;
 	width: 200px;
