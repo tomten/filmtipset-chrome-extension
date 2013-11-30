@@ -9,7 +9,7 @@ FilmtipsetExtension.ExtensionHost = function(gaq){
     this.cache = new Cache(
         -1, // Maximum size of cache = maximum size of storage medium 
         false, // Debug?
-        new Cache.LocalStorageCacheStorage("filmtipset2.5")); // Use this extension's Local Storage for persisting the cache
+        new Cache.LocalStorageCacheStorage("filmtipset2.10")); // Use this extension's Local Storage for persisting the cache
     // TODO: When to clear out obsolete caches?
     this.gradeForTab = {}; // Session-scoped storage for the current page action grades for different browser tabs
     this.wantedList = undefined; // Session-scoped storage for items in the user's Filmtipset Wanted List
@@ -97,66 +97,80 @@ FilmtipsetExtension.ExtensionHost.prototype.activateImdbPage = function(
             }
         );
     };
-                
+
 FilmtipsetExtension.ExtensionHost.prototype.initRequestListener = function(){
     var filmtips = this;
-    chrome.extension.onRequest.addListener(function(
+    chrome.extension.onRequest.addListener(
+        /**
+         @param {FilmtipsetExtension.ContentScriptRequest} request Request from content script.
+         @param {{ tab }} sender Sending tab.
+         @param {function(*)} callback Callback function to content script.
+         */
+        function(
             request, 
             sender, 
             callback
             ) {
-        if (request.action === "activateImdbPage") {
-            filmtips.activateImdbPage(sender.tab.id, request.imdbId);
-        } else if (request.action === "track") {
-            filmtips.track(
-                request.trackCategory, 
-                request.trackAction
-                );
-        } else if (request.action === "gradeForLink") {
-            var film = new FilmtipsetExtension.FilmtipsetApi(
-                localStorage.accessKey, 
-                localStorage.userKey, 
-                filmtips.cache, 
-                filmtips.log
-                );
-            film.getInfoForImdbId(
-                '' + request.imdbId,
-                function(movieInfo) {
-                    var gradeInfo = film.getGradeInfoMovie(movieInfo);
-                    var common = new FilmtipsetExtension.Common();
-                    var iconUrl = common.getIconFromGradeInfo(gradeInfo);
-                    callback({ 
-                        fakeId: request.fakeId, 
-                        grade: iconUrl, 
-                        movieInfo: movieInfo 
-                        });
-                    }
-                );
-        } else if (request.action === "gradeForLinkText") {
-            var film2 = new FilmtipsetExtension.FilmtipsetApi(
-                localStorage.accessKey, 
-                localStorage.userKey, 
-                filmtips.cache, 
-                filmtips.log
-                );
-            film2.searchExact(
-                '' + request.imdbId, // HACK
-                function(movieInfos) {
-                    var movieInfo = 
-                        movieInfos.length > 0 
-                            ? movieInfos[0] 
-                            : {}; // HACK
-                    var gradeInfo = film2.getGradeInfoMovie(movieInfo);
-                    var common = new FilmtipsetExtension.Common();
-                    var iconUrl = common.getIconFromGradeInfo(gradeInfo);
-                    callback({ 
-                        fakeId: request.fakeId, 
-                        grade: iconUrl, 
-                        movieInfo: movieInfo 
-                        });
-                    }
-                );
+            if (request.action === "activateImdbPage") {
+                filmtips.activateImdbPage(
+                    sender.tab.id, 
+                    request.imdbData.imdbId
+                    );
+            } else if (request.action === "track") {
+                filmtips.track(
+                    request.trackData.trackCategory, 
+                    request.trackData.trackAction
+                    );
+            } else if (request.action === "gradeForLink") {
+                var film = new FilmtipsetExtension.FilmtipsetApi(
+                    localStorage.accessKey, 
+                    localStorage.userKey, 
+                    filmtips.cache, 
+                    filmtips.log
+                    );
+                film.getInfoForImdbId(
+                    request.imdbData.imdbId,
+                    function(movieInfo) {
+                        var gradeInfo = film.getGradeInfoMovie(movieInfo);
+                        var common = new FilmtipsetExtension.Common();
+                        var iconUrl = common.getIconFromGradeInfo(gradeInfo);
+                        callback({ 
+                            fakeId: request.imdbData.fakeId, 
+                            grade: iconUrl, 
+                            movieInfo: movieInfo 
+                            });
+                        }
+                    );
+            } else if (request.action === "gradeForLinkText") {
+                var film2 = new FilmtipsetExtension.FilmtipsetApi(
+                    localStorage.accessKey, 
+                    localStorage.userKey, 
+                    filmtips.cache, 
+                    filmtips.log
+                    );
+                var titleToSearchFor = request.imdbData.imdbId;
+                var endingThe = /, The$/;
+                if (titleToSearchFor.match(endingThe)) {
+                    titleToSearchFor = 'The ' + titleToSearchFor.replace(endingThe, '');
+                }
+                film2.searchExact(
+                    titleToSearchFor, // HACK: Should be imdbTitle
+                    function(movieInfos) {
+                        var movieInfo = 
+                            movieInfos.length > 0 ? 
+                                movieInfos[0] : 
+                                {}; // HACK
+                        var gradeInfo = film2.getGradeInfoMovie(movieInfo);
+                        var common = new FilmtipsetExtension.Common();
+                        var iconUrl = common.getIconFromGradeInfo(gradeInfo);
+                        callback({ 
+                            fakeId: request.imdbData.fakeId, // HACK: Shouldn't be in imdbData 
+                            grade: iconUrl, 
+                            movieInfo: movieInfo 
+                            });
+                        }
+                    );
+                } 
             } 
-        } 
-    ); 
+        ); 
     }; 
