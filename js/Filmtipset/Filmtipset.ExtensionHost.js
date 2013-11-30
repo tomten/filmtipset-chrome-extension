@@ -148,8 +148,13 @@ FilmtipsetExtension.ExtensionHost.prototype.initRequestListener = function(){
                     filmtips.cache, 
                     filmtips.log
                     );
+                var titleToSearchFor = request.imdbData.imdbId;
+                var endingThe = /, The$/;
+                if (titleToSearchFor.match(endingThe)) {
+                    titleToSearchFor = 'The ' + titleToSearchFor.replace(endingThe, '');
+                }
                 film2.searchExact(
-                    request.imdbData.imdbId, // HACK: Should be imdbTitle
+                    titleToSearchFor, // HACK: Should be imdbTitle
                     function(movieInfos) {
                         var movieInfo = 
                             movieInfos.length > 0 ? 
