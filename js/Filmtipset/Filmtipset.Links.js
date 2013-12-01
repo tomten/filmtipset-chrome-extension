@@ -63,7 +63,7 @@ FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selecto
             );
         this.jQuery("#filmtipsetImdbLinks")
             .hide() // Hide the progress bar and...
-            .delay(2000) // ...wait 2 seconds before...
+            .delay(3000) // ...wait 3 seconds before...
             .slideDown(500, "linear", function(){}); // ...showing it (to avoid it showing it at all if possible)
         this.processOneLink(0);
         }
@@ -76,7 +76,6 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
     var self = this;
     var $a = this.jQuery(this.$links[currentLinkNumber]);
     var href = $a.attr('href') + '/';
-    $a.attr('fakeid', currentLinkNumber);
     var common = new FilmtipsetExtension.Common();
     var imdbIdt = common.getImdbIdFromUrl(href);
     chrome.extension.sendRequest(
@@ -88,14 +87,17 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
                 currentLinkNumber
                 )
             ),
-        function(fakeIdAndGrade) {
-            var fakeId = fakeIdAndGrade.fakeId;
-            var grade = fakeIdAndGrade.grade;
-            var gradeUrl = grade;
-            var $link = self.jQuery("a[fakeid='%fakeid%']:first".replace("%fakeid%", fakeId));
+        /**
+         @param {FilmtipsetExtension.ContentScriptRequestCallback} contentScriptRequestCallback
+         */
+        function(contentScriptRequestCallback) {
+            var reference = contentScriptRequestCallback.reference;
+            var gradeUrl = contentScriptRequestCallback.gradeIconUrl;
+            var movieInfo = contentScriptRequestCallback.movieInfo;
+            var $link = $(self.$links[reference]); 
             if (
-                fakeIdAndGrade.movieInfo &&
-                fakeIdAndGrade.movieInfo.name
+                movieInfo &&
+                movieInfo.name
                 )
                 $link.tipTip({ 
                     delay: 1, 
@@ -106,16 +108,16 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
                     keepAlive: false,
                     content: 
                         FilmtipsetExtension.Links.popover_html_template
-                            .replace("%description%", fakeIdAndGrade.movieInfo.description || "")
-                            .replace("%title%", fakeIdAndGrade.movieInfo.name)
-                            .replace("%imgUrl%", fakeIdAndGrade.movieInfo.image)
-                            .replace("%url%", fakeIdAndGrade.movieInfo.url)
+                            .replace("%description%", movieInfo.description || "")
+                            .replace("%title%", movieInfo.name)
+                            .replace("%imgUrl%", movieInfo.image)
+                            .replace("%url%", movieInfo.url)
                     });
             var $gradeImage = self.jQuery(FilmtipsetExtension.Links.image_html_template.replace("%grade%", gradeUrl));
             $gradeImage.hide();
             $link.append($gradeImage);
             $gradeImage.fadeIn(200); 
-            if (fakeId >= self.$links.length - 1) { // HACK: Should be == something
+            if (reference >= self.$links.length - 1) { // HACK: Should be == something
                 self.jQuery("#filmtipsetImdbLinks").stop().slideUp(500, "linear", function(){});
                 }
             else {

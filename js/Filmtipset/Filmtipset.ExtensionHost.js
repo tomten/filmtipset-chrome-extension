@@ -9,7 +9,7 @@ FilmtipsetExtension.ExtensionHost = function(gaq){
     this.cache = new Cache(
         -1, // Maximum size of cache = maximum size of storage medium 
         false, // Debug?
-        new Cache.LocalStorageCacheStorage("filmtipset2.10")); // Use this extension's Local Storage for persisting the cache
+        new Cache.LocalStorageCacheStorage("filmtipset2.11")); // Use this extension's Local Storage for persisting the cache
     // TODO: When to clear out obsolete caches?
     this.gradeForTab = {}; // Session-scoped storage for the current page action grades for different browser tabs
     this.wantedList = undefined; // Session-scoped storage for items in the user's Filmtipset Wanted List
@@ -134,11 +134,13 @@ FilmtipsetExtension.ExtensionHost.prototype.initRequestListener = function(){
                         var gradeInfo = film.getGradeInfoMovie(movieInfo);
                         var common = new FilmtipsetExtension.Common();
                         var iconUrl = common.getIconFromGradeInfo(gradeInfo);
-                        callback({ 
-                            fakeId: request.imdbData.fakeId, 
-                            grade: iconUrl, 
-                            movieInfo: movieInfo 
-                            });
+                        callback(
+                            new FilmtipsetExtension.ContentScriptRequestCallback( 
+                                request.imdbData.reference, 
+                                iconUrl, 
+                                movieInfo 
+                                )
+                            );
                         }
                     );
             } else if (request.action === "gradeForLinkText") {
@@ -163,11 +165,13 @@ FilmtipsetExtension.ExtensionHost.prototype.initRequestListener = function(){
                         var gradeInfo = film2.getGradeInfoMovie(movieInfo);
                         var common = new FilmtipsetExtension.Common();
                         var iconUrl = common.getIconFromGradeInfo(gradeInfo);
-                        callback({ 
-                            fakeId: request.imdbData.fakeId, // HACK: Shouldn't be in imdbData 
-                            grade: iconUrl, 
-                            movieInfo: movieInfo 
-                            });
+                        callback(
+                            new FilmtipsetExtension.ContentScriptRequestCallback(
+                                request.imdbData.reference, // HACK: Shouldn't be in imdbData 
+                                iconUrl, 
+                                movieInfo 
+                                )
+                            );
                         }
                     );
                 } 

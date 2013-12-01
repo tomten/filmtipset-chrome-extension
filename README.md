@@ -3,6 +3,10 @@ filmtipset-chrome-extension
 
 Chrome Extension for Filmtipset movie site. Released version available in Chrome Web Store: https://chrome.google.com/webstore/detail/filmtipset/faajjfnpkdjpceeodjnmhdphbgehjeji
 
+Version 2.11:
+
+- ?
+
 Version 2.10:
 
 - Slightly better movie finding on Google Movies

@@ -1,5 +1,21 @@
 /**
  @constructor
+ @param {string} reference Reference passed to original content script request.
+ @param {string} gradeIconUrl Resulting grade icon URL for original content script request.
+ @param {Object} movieInfo Movie info.
+ */
+FilmtipsetExtension.ContentScriptRequestCallback = function(
+        reference, 
+        gradeIconUrl,
+        movieInfo
+        ){
+    this.reference = reference;
+    this.gradeIconUrl = gradeIconUrl;
+    this.movieInfo = movieInfo;
+    };
+
+/**
+ @constructor
  @param {string} action Action.
  @param {FilmtipsetExtension.ContentScriptRequest.TrackData} trackData Data for tracking requests.
  @param {FilmtipsetExtension.ContentScriptRequest.ImdbData} imdbData Data for IMDB requests.
@@ -30,13 +46,13 @@ FilmtipsetExtension.ContentScriptRequest.TrackData = function(
 /**
  @constructor
  @param {string} imdbId IMDB ID.
- @param {string} fakeId Content script page request reference. 
+ @param {string} reference Content script page request reference. 
  */
 FilmtipsetExtension.ContentScriptRequest.ImdbData = function(
         imdbId,
-        fakeId
+        reference
         ){
     this.imdbId = imdbId;
-    this.fakeId = fakeId;
+    this.reference = reference;
     };
     
