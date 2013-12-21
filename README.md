@@ -5,13 +5,14 @@ Chrome Extension for Filmtipset movie site. Released version available in Chrome
 
 Version 2.11:
 
-- ?
+- Movie info pop-over slightly easier to mouse-over.
+- Extension internals remade to match new Chrome Extension guidelines (event page instead of background page, messaging API upgraded, persistent port for messaging).
 
 Version 2.10:
 
 - Slightly better movie finding on Google Movies
 - Less annoying progress bar?
-- jQuery 2, no need for IE support
+- jQuery 2 instead of 1 since we have no need for IE support
 
 Version 2.5:
 

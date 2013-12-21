@@ -31,7 +31,7 @@ FilmtipsetExtension.ExtensionHost.prototype.track = function(
         action
         ) {
     this.log("tracking " + category + ": " + action);
-    window._gaq.push(['_trackEvent', category, action]);
+    // TODO: window._gaq.push(['_trackEvent', category, action]);
     };
 
 FilmtipsetExtension.ExtensionHost.prototype.initializeLocalStorage = function(){

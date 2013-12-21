@@ -58,7 +58,7 @@ FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selecto
     var self = this;
     this.port = chrome.runtime.connect();
     this.port.onMessage.addListener(function(contentScriptRequestCallback) {
-        console.log("got callback for #" + contentScriptRequestCallback.reference + " " + contentScriptRequestCallback.movieInfo.name); // HACK
+        console.log("got callback for #" + contentScriptRequestCallback.reference); // HACK
         var reference = contentScriptRequestCallback.reference;
         var gradeUrl = contentScriptRequestCallback.gradeIconUrl;
         var movieInfo = contentScriptRequestCallback.movieInfo;
