@@ -54,7 +54,14 @@
         "48": "images/icons/48.png",
         "128": "images/icons/128.png" 
     },
-    "background": { "page": "extension-pages/filmtipset.html" },
+    "background": { "persistent": false, "scripts": [ 
+        "js/cache.js",
+        "js/Filmtipset/Filmtipset.js", 
+        "js/Filmtipset/Filmtipset.FilmtipsetApi.js", 
+        "js/Filmtipset/Filmtipset.Common.js",
+        "js/Filmtipset/Filmtipset.ContentScriptRequest.js",
+        "js/Filmtipset/Filmtipset.ExtensionHost.js"
+        ] },
     "page_action": {
         "default_icon": "images/pageactions/unknown.png",
         "default_popup": "extension-pages/grade.html"

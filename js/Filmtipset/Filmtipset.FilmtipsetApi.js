@@ -379,6 +379,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getInfoForImdbId = function(
                 { expirationAbsolute: (new Date()).addDays(7) } // Save Filmtipset movie info for a week
                 );
             callback(data);
+            return;
             }                 
         );
     };

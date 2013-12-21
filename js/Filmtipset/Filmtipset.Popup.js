@@ -29,7 +29,7 @@ Array.prototype.any = function(comparer){
  * @param {{ id: number }} tab Active tab.
  */
 FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
-    var backgroundPage = chrome.extension.getBackgroundPage(); // HACK: Use sendRequest 
+    var backgroundPage = chrome.extension.getBackgroundPage(); // HACK: Use sendMessage 
     var currentGradeInfo = backgroundPage.filmtipset.gradeForTab["tab" + tab.id];
     var popup = this;
     if (currentGradeInfo) {

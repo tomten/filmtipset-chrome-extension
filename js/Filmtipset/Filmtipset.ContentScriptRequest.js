@@ -16,43 +16,53 @@ FilmtipsetExtension.ContentScriptRequestCallback = function(
 
 /**
  @constructor
- @param {string} action Action.
- @param {FilmtipsetExtension.ContentScriptRequest.TrackData} trackData Data for tracking requests.
- @param {FilmtipsetExtension.ContentScriptRequest.ImdbData} imdbData Data for IMDB requests.
+ @param {string} imdbId IMDB ID.
  */
-FilmtipsetExtension.ContentScriptRequest = function(
-        action, 
-        trackData,
-        imdbData
+FilmtipsetExtension.ActivateImdbPageRequest = function(
+        imdbId
         ){
-    this.action = action;
-    this.trackData = trackData;
-    this.imdbData = imdbData;
+    this.imdbId = imdbId;
+    this.type = "FilmtipsetExtension.ActivateImdbPageRequest"; // used for deserialization of request
     };
 
 /**
  @constructor
- @param {string} trackCategory Tracking category.
- @param {string} trackAction Tracking action.
- */
-FilmtipsetExtension.ContentScriptRequest.TrackData = function(
-        trackCategory, 
-        trackAction
-        ){
-    this.trackCategory = trackCategory;
-    this.trackAction = trackAction;
-    };
-    
-/**
- @constructor
  @param {string} imdbId IMDB ID.
- @param {string} reference Content script page request reference. 
+ @param {string} reference Reference for callback.
  */
-FilmtipsetExtension.ContentScriptRequest.ImdbData = function(
+FilmtipsetExtension.GradeForLinkRequest = function(
         imdbId,
         reference
         ){
     this.imdbId = imdbId;
     this.reference = reference;
+    this.type = "FilmtipsetExtension.GradeForLinkRequest"; // used for deserialization of request
     };
-    
+
+/**
+ @constructor
+ @param {string} query Movie search query.
+ @param {string} reference Reference for callback.
+ */
+FilmtipsetExtension.GradeForSearchRequest = function(
+        query,
+        reference
+        ){
+    this.query = query;
+    this.reference = reference;
+    this.type = "FilmtipsetExtension.GradeForSearchRequest"; // used for deserialization of request
+    };
+
+/**
+ @constructor
+ @param {string} category Tracking category.
+ @param {string} action Tracking action.
+ */
+FilmtipsetExtension.TrackRequest = function(
+        category,
+        action
+        ){
+    this.category = category;
+    this.action = action;
+    this.type = "FilmtipsetExtension.TrackRequest"; // used for deserialization of request
+    };
