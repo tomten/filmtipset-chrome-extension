@@ -109,7 +109,6 @@ FilmtipsetExtension.ExtensionHost.prototype.initializeMessageListener = function
                 }
 
             if (contentScriptRequest instanceof FilmtipsetExtension.GradeForLinkRequest) {
-                console.log("got gradeForLink request message for #" + contentScriptRequest.reference); // HACK
                 var film = new FilmtipsetExtension.FilmtipsetApi(
                     localStorage.accessKey, 
                     localStorage.userKey, 
@@ -122,7 +121,6 @@ FilmtipsetExtension.ExtensionHost.prototype.initializeMessageListener = function
                         var gradeInfo = film.getGradeInfoMovie(movieInfo);
                         var common = new FilmtipsetExtension.Common();
                         var iconUrl = common.getIconFromGradeInfo(gradeInfo);
-                        console.log("posting return message for #" + contentScriptRequest.reference); // HACK
                         port.postMessage(
                             new FilmtipsetExtension.ContentScriptRequestCallback( 
                                 contentScriptRequest.reference, 

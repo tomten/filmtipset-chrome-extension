@@ -27,11 +27,7 @@ FilmtipsetExtension.Links.popover_html_template = '<a style="float:right;" href=
 /** @const */
 FilmtipsetExtension.Links.progress_html = 
     '<div id="filmtipsetImdbLinks" style="background-image: url(%remsaUrl%);">'+
-        'Processing '+ // TODO: i18n
-        '<span id="filmLinkCount">'+
-            '%linkCount% '+
-        '</span> '+
-        'IMDB links...'+
+        chrome.i18n.getMessage('progressHtml') +
     '</div>';
 
 /** Filmtipsifies movie links on Google Movies */    
@@ -49,6 +45,51 @@ FilmtipsetExtension.Links.prototype.processLinks = function(){
     this.processLinksInternal(FilmtipsetExtension.Links.jquery_imdb_link_selector);
     };
 
+FilmtipsetExtension.Links.prototype.funk = function(self, contentScriptRequestCallback) {
+    var reference = contentScriptRequestCallback.reference;
+    var gradeUrl = contentScriptRequestCallback.gradeIconUrl;
+    var movieInfo = contentScriptRequestCallback.movieInfo;
+    var $link = $(self.$links[reference]); 
+    if (
+        movieInfo &&
+        movieInfo.name
+        )
+        $link.tipTip({ 
+            delay: 1, 
+            maxWidth: "300px",
+            fadeIn: 100, 
+            fadeOut: 400, 
+            edgeOffset: 0,
+            keepAlive: true,
+            content: 
+                FilmtipsetExtension.Links.popover_html_template
+                    .replace("%description%", movieInfo.description || "")
+                    .replace("%title%", movieInfo.name)
+                    .replace("%imgUrl%", movieInfo.image)
+                    .replace("%url%", movieInfo.url)
+            });
+    var $gradeImage = self.jQuery(FilmtipsetExtension.Links.image_html_template.replace("%grade%", gradeUrl));
+    $gradeImage.hide();
+    $link.append($gradeImage);
+    $gradeImage.fadeIn(200); 
+    if (reference >= self.$links.length - 1) { // HACK: Should be == something
+        self.jQuery("#filmtipsetImdbLinks").stop().slideUp(500, "linear", function(){});
+        self.port.disconnect();
+        }
+    else {
+        var $linkCount = self.jQuery("#filmLinkCount");
+        var linksLeft = parseInt($linkCount.html(), 10);
+        linksLeft--;
+        $linkCount.html(linksLeft);
+        window.setTimeout( 
+            function(){
+                self.processOneLink(parseInt(reference, 10) + 1);
+                }, 
+            1
+            );
+        }
+    };    
+    
 /** 
  Filmtipsifies links using the specified link selector
  @param {string} link_selector jQuery link selector
@@ -56,54 +97,10 @@ FilmtipsetExtension.Links.prototype.processLinks = function(){
  */
 FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selector){
     var self = this;
-    this.port = chrome.runtime.connect();
-    this.port.onMessage.addListener(function(contentScriptRequestCallback) {
-        console.log("got callback for #" + contentScriptRequestCallback.reference); // HACK
-        var reference = contentScriptRequestCallback.reference;
-        var gradeUrl = contentScriptRequestCallback.gradeIconUrl;
-        var movieInfo = contentScriptRequestCallback.movieInfo;
-        var $link = $(self.$links[reference]); 
-        if (
-            movieInfo &&
-            movieInfo.name
-            )
-            $link.tipTip({ 
-                delay: 1, 
-                maxWidth: "300px",
-                fadeIn: 100, 
-                fadeOut: 400, 
-                edgeOffset: 0,
-                keepAlive: true,
-                content: 
-                    FilmtipsetExtension.Links.popover_html_template
-                        .replace("%description%", movieInfo.description || "")
-                        .replace("%title%", movieInfo.name)
-                        .replace("%imgUrl%", movieInfo.image)
-                        .replace("%url%", movieInfo.url)
-                });
-        var $gradeImage = self.jQuery(FilmtipsetExtension.Links.image_html_template.replace("%grade%", gradeUrl));
-        $gradeImage.hide();
-        $link.append($gradeImage);
-        $gradeImage.fadeIn(200); 
-        if (reference >= self.$links.length - 1) { // HACK: Should be == something
-            self.jQuery("#filmtipsetImdbLinks").stop().slideUp(500, "linear", function(){});
-            self.port.disconnect();
-            }
-        else {
-            var $linkCount = self.jQuery("#filmLinkCount");
-            var linksLeft = parseInt($linkCount.html(), 10);
-            linksLeft--;
-            $linkCount.html(linksLeft);
-            window.setTimeout( 
-                function(){
-                    self.processOneLink(parseInt(reference) + 1);
-                    }, 
-                1
-                );
-            }
-        });
-    this.$links = this.jQuery(link_selector);
-    if (this.$links.length > 0) {
+    this.$links = this.jQuery(link_selector); // collect all links to follow
+    if (this.$links.length > 0) { // are there any links to follow?
+        this.port = chrome.runtime.connect(); // setup the port used to communicate with the event page
+        this.port.onMessage.addListener(function(x){self.funk(self,x)}); // setup the response handler for the port
         this.jQuery("body").append(
             FilmtipsetExtension.Links.progress_html
                 .replace("%remsaUrl%", chrome.extension.getURL("images/progress.png"))
@@ -126,13 +123,7 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
     var href = $a.attr('href') + '/';
     var common = new FilmtipsetExtension.Common();
     var imdbIdt = common.getImdbIdFromUrl(href);
-    /**
-    @param {FilmtipsetExtension.ContentScriptRequestCallback} contentScriptRequestCallback
-    */
-    //var callback = function(contentScriptRequestCallback) {
-    //    };
     if (imdbIdt) {
-        console.log("posting gradeForLinkRequest message for link #" + currentLinkNumber); // HACK
         self.port.postMessage(
             new FilmtipsetExtension.GradeForLinkRequest(
                 imdbIdt,
@@ -141,12 +132,11 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
             );
         }
     else {
-        chrome.runtime.sendMessage(
+        self.port.postMessage(
             new FilmtipsetExtension.GradeForSearchRequest(
                 $a.text(),
                 currentLinkNumber
-                ),
-            callback
+                )
             );
         }
     };
