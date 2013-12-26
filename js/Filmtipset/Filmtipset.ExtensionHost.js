@@ -4,11 +4,12 @@
  * @constructor
  * @param {Array} gaq Reference to Google Analytics Async Queue. Used for event tracking.
  */
-FilmtipsetExtension.ExtensionHost = function(gaq){
+FilmtipsetExtension.ExtensionHost = function(gaq, debug){
     this.gaq = gaq;        
+    this.debug = debug;
     this.cache = new Cache(
         -1, // Maximum size of cache = maximum size of storage medium 
-        false, // Debug?
+        this.debug, // Debug?
         new Cache.LocalStorageCacheStorage("filmtipset2.11")); // Use this extension's Local Storage for persisting the cache
     // TODO: When to clear out obsolete caches?
     this.gradeForTab = {}; // Session-scoped storage for the current page action grades for different browser tabs
@@ -46,7 +47,9 @@ FilmtipsetExtension.ExtensionHost.prototype.createAndSelectTab = function(url){
     };
 
 FilmtipsetExtension.ExtensionHost.prototype.log = function(message) {
-    console.log(message); 
+    if (this.debug) {
+        console.log(message);
+        }
     };         
 
 FilmtipsetExtension.ExtensionHost.prototype.showPageActionForTab = function(
@@ -82,6 +85,9 @@ FilmtipsetExtension.ExtensionHost.prototype.activateImdbPage = function(
     var tips = this;
     film.getInfoForImdbId(
         imdbId,
+        /**
+         * @param {Object} movieInfo Filmtipset movie info.
+         */
         function(movieInfo) {
             var gradeInfo = film.getGradeInfoMovie(movieInfo);
             tips.gradeForTab["tab" + tabId] = gradeInfo;
@@ -101,13 +107,25 @@ FilmtipsetExtension.ExtensionHost.prototype.activateImdbPage = function(
 FilmtipsetExtension.ExtensionHost.prototype.initializeMessageListener = function(){
     var self = this;
     
-    chrome.runtime.onConnect.addListener(function(port) {
+    chrome.runtime.onConnect.addListener(
+        /**
+         * @param {chrome.runtime.Port} port
+         */
+        function(port) {
+        self.log("Content script connected");
+        port.onDisconnect.addListener(function() {
+            self.log("Content script disconnected");
+            });
         port.onMessage.addListener(function(contentScriptRequest) {
             
             if (contentScriptRequest.type === "FilmtipsetExtension.GradeForLinkRequest") {
                 contentScriptRequest.__proto__ = FilmtipsetExtension.GradeForLinkRequest.prototype;
                 }
 
+            if (contentScriptRequest.type === "FilmtipsetExtension.GradeForSearchRequest") {
+                contentScriptRequest.__proto__ = FilmtipsetExtension.GradeForSearchRequest.prototype;
+                } 
+            
             if (contentScriptRequest instanceof FilmtipsetExtension.GradeForLinkRequest) {
                 var film = new FilmtipsetExtension.FilmtipsetApi(
                     localStorage.accessKey, 
@@ -132,7 +150,38 @@ FilmtipsetExtension.ExtensionHost.prototype.initializeMessageListener = function
                     );
                 } 
             
-
+            if (contentScriptRequest instanceof FilmtipsetExtension.GradeForSearchRequest) {
+                var film2 = new FilmtipsetExtension.FilmtipsetApi(
+                    localStorage.accessKey, 
+                    localStorage.userKey, 
+                    self.cache, 
+                    self.log
+                    );
+                var titleToSearchFor = contentScriptRequest.query;
+                var endingThe = /, The$/;
+                if (titleToSearchFor.match(endingThe)) {
+                    titleToSearchFor = 'The ' + titleToSearchFor.replace(endingThe, '');
+                    }
+                film2.searchExact(
+                    titleToSearchFor, // HACK: Should be imdbTitle
+                    function(movieInfos) {
+                        var movieInfo = 
+                            movieInfos.length > 0 ? 
+                                movieInfos[0] : 
+                                {}; // HACK
+                        var gradeInfo = film2.getGradeInfoMovie(movieInfo);
+                        var common = new FilmtipsetExtension.Common();
+                        var iconUrl = common.getIconFromGradeInfo(gradeInfo);
+                        port.postMessage(
+                            new FilmtipsetExtension.ContentScriptRequestCallback( 
+                                contentScriptRequest.reference, 
+                                iconUrl, 
+                                movieInfo 
+                                )
+                            );
+                        }
+                    );
+                } 
                 
             });
         });
@@ -149,65 +198,36 @@ FilmtipsetExtension.ExtensionHost.prototype.initializeMessageListener = function
             callback
             ) {
             
+            // TODO: Automate this somehow... without eval
+            
             if (request.type === "FilmtipsetExtension.ActivateImdbPageRequest") {
                 request.__proto__ = FilmtipsetExtension.ActivateImdbPageRequest.prototype;
-            } else if (request.type === "FilmtipsetExtension.TrackRequest") {
+            } 
+            
+            if (request.type === "FilmtipsetExtension.TrackRequest") {
                 request.__proto__ = FilmtipsetExtension.TrackRequest.prototype;
-            } else if (request.type === "FilmtipsetExtension.GradeForSearchRequest") {
-                request.__proto__ = FilmtipsetExtension.GradeForSearchRequest.prototype;
-            } // TODO: Automate this somehow... without eval
+            } 
             
             if (request instanceof FilmtipsetExtension.ActivateImdbPageRequest) {
                 self.activateImdbPage(
                     sender.tab.id, 
                     request.imdbId
                     );
-            } 
+                } 
             
             if (request instanceof FilmtipsetExtension.TrackRequest) {
                 self.track(
                     request.category, 
                     request.action
                     );
-            }
-            
-            if (request instanceof FilmtipsetExtension.GradeForSearchRequest) {
-                var film2 = new FilmtipsetExtension.FilmtipsetApi(
-                    localStorage.accessKey, 
-                    localStorage.userKey, 
-                    self.cache, 
-                    self.log
-                    );
-                var titleToSearchFor = request.query;
-                var endingThe = /, The$/;
-                if (titleToSearchFor.match(endingThe)) {
-                    titleToSearchFor = 'The ' + titleToSearchFor.replace(endingThe, '');
                 }
-                film2.searchExact(
-                    titleToSearchFor, // HACK: Should be imdbTitle
-                    function(movieInfos) {
-                        var movieInfo = 
-                            movieInfos.length > 0 ? 
-                                movieInfos[0] : 
-                                {}; // HACK
-                        var gradeInfo = film2.getGradeInfoMovie(movieInfo);
-                        var common = new FilmtipsetExtension.Common();
-                        var iconUrl = common.getIconFromGradeInfo(gradeInfo);
-                        callback(
-                            new FilmtipsetExtension.ContentScriptRequestCallback(
-                                request.reference,  
-                                iconUrl, 
-                                movieInfo 
-                                )
-                            );
-                        }
-                    );
-                } 
             }
             
-        ); 
+        );
+        
     }; 
     
-var hosten = new FilmtipsetExtension.ExtensionHost(null);
+// TODO: move code below to "event page initializer" script file
+var hosten = new FilmtipsetExtension.ExtensionHost(null, true); // TODO
 hosten.initializeLocalStorage();
 hosten.initializeMessageListener();

@@ -6,11 +6,11 @@
 FilmtipsetExtension.Links = function (jQuery){
     this.jQuery = jQuery;
     this.$links = [];
-    this.port = null;
+    this.linkProcessingPort = null;
     };
 
 /** @const */
-FilmtipsetExtension.Links.image_html_template = '<img style="position:absolute;" width="20" height="20" src="%grade%" />';    
+FilmtipsetExtension.Links.image_html_template = '<img hidden style="position:absolute;" width="20" height="20" src="%grade%" />';    
 
 /** @const */
 FilmtipsetExtension.Links.jquery_imdb_link_selector = 'a:regex(href, (www\\.)?imdb\\.(.+)\\/tt(\\d+)\\/?)';    
@@ -26,7 +26,7 @@ FilmtipsetExtension.Links.popover_html_template = '<a style="float:right;" href=
 
 /** @const */
 FilmtipsetExtension.Links.progress_html = 
-    '<div id="filmtipsetImdbLinks" style="background-image: url(%remsaUrl%);">'+
+    '<div hidden id="filmtipsetImdbLinks" style="background-image: url(%remsaUrl%);">'+
         chrome.i18n.getMessage('progressHtml') +
     '</div>';
 
@@ -45,11 +45,15 @@ FilmtipsetExtension.Links.prototype.processLinks = function(){
     this.processLinksInternal(FilmtipsetExtension.Links.jquery_imdb_link_selector);
     };
 
-FilmtipsetExtension.Links.prototype.funk = function(self, contentScriptRequestCallback) {
+/** 
+ * Handles responses from the event page 
+ * @param {FilmtipsetExtension.ContentScriptRequestCallback} contentScriptRequestCallback Response from event page.
+ */    
+FilmtipsetExtension.Links.prototype.handleResponse = function(contentScriptRequestCallback) {
     var reference = contentScriptRequestCallback.reference;
     var gradeUrl = contentScriptRequestCallback.gradeIconUrl;
     var movieInfo = contentScriptRequestCallback.movieInfo;
-    var $link = $(self.$links[reference]); 
+    var $link = this.jQuery(this.$links[reference]); 
     if (
         movieInfo &&
         movieInfo.name
@@ -68,19 +72,20 @@ FilmtipsetExtension.Links.prototype.funk = function(self, contentScriptRequestCa
                     .replace("%imgUrl%", movieInfo.image)
                     .replace("%url%", movieInfo.url)
             });
-    var $gradeImage = self.jQuery(FilmtipsetExtension.Links.image_html_template.replace("%grade%", gradeUrl));
-    $gradeImage.hide();
+    var $gradeImage = this.jQuery(FilmtipsetExtension.Links.image_html_template.replace("%grade%", gradeUrl));
+    //$gradeImage.hide();
     $link.append($gradeImage);
     $gradeImage.fadeIn(200); 
-    if (reference >= self.$links.length - 1) { // HACK: Should be == something
-        self.jQuery("#filmtipsetImdbLinks").stop().slideUp(500, "linear", function(){});
-        self.port.disconnect();
+    if (reference >= this.$links.length - 1) { // HACK: Should be == something
+        this.jQuery("#filmtipsetImdbLinks").stop().slideUp(500, "linear", function(){});
+        this.linkProcessingPort.disconnect();
         }
     else {
-        var $linkCount = self.jQuery("#filmLinkCount");
+        var $linkCount = this.jQuery("#filmLinkCount");
         var linksLeft = parseInt($linkCount.html(), 10);
         linksLeft--;
         $linkCount.html(linksLeft);
+        var self = this;
         window.setTimeout( 
             function(){
                 self.processOneLink(parseInt(reference, 10) + 1);
@@ -99,15 +104,21 @@ FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selecto
     var self = this;
     this.$links = this.jQuery(link_selector); // collect all links to follow
     if (this.$links.length > 0) { // are there any links to follow?
-        this.port = chrome.runtime.connect(); // setup the port used to communicate with the event page
-        this.port.onMessage.addListener(function(x){self.funk(self,x)}); // setup the response handler for the port
+        this.linkProcessingPort = chrome.runtime.connect(); // setup the port used to communicate with the event page
+        this.linkProcessingPort.onMessage.addListener(
+            /**
+             * @param {FilmtipsetExtension.ContentScriptRequestCallback} contentScriptRequestCallback
+             */
+            function(contentScriptRequestCallback){
+                self.handleResponse.call(self, contentScriptRequestCallback);
+            }); // setup the response handler for the port
         this.jQuery("body").append(
             FilmtipsetExtension.Links.progress_html
                 .replace("%remsaUrl%", chrome.extension.getURL("images/progress.png"))
                 .replace("%linkCount%", this.$links.length)
             );
         this.jQuery("#filmtipsetImdbLinks")
-            .hide() // Hide the progress bar and...
+            //.hide() // Hide the progress bar and...
             .delay(3000) // ...wait 3 seconds before...
             .slideDown(500, "linear", function(){}); // ...showing it (to avoid it showing it at all if possible)
         this.processOneLink(0);
@@ -124,7 +135,7 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
     var common = new FilmtipsetExtension.Common();
     var imdbIdt = common.getImdbIdFromUrl(href);
     if (imdbIdt) {
-        self.port.postMessage(
+        self.linkProcessingPort.postMessage(
             new FilmtipsetExtension.GradeForLinkRequest(
                 imdbIdt,
                 currentLinkNumber
@@ -132,7 +143,7 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
             );
         }
     else {
-        self.port.postMessage(
+        self.linkProcessingPort.postMessage(
             new FilmtipsetExtension.GradeForSearchRequest(
                 $a.text(),
                 currentLinkNumber
