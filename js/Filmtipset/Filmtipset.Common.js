@@ -27,14 +27,6 @@ FilmtipsetExtension.Common.prototype.getImdbIdFromUrl = function(url) {
 };
 
 /**
- * Log.
- * @param {string} message Message.
- */
-FilmtipsetExtension.Common.prototype.log = function(message) {
-    chrome.extension.getBackgroundPage().log(message); 
-}; 
-
-/**
  * Determines the grade icon URL for a Grade Info.
  * @param {FilmtipsetExtension.GradeInfo} gradeInfo Grade Info.
  * @return {string} Grade icon URL.
