@@ -6,7 +6,7 @@
  * @param {string} accessKey Application-specific access key for Filmtipset API.
  * @param {string} userKey User-specific user key for Filmtipset API.
  * @param {Object} cache Cache instance used by API. Must implement Monsur cache methods and properties.
- * @param {Object} logger Logger instance used by API. Must implement log(msg) method.
+ * @param {Function} logger Logging method.
 */
 FilmtipsetExtension.FilmtipsetApi = function (
         accessKey, 
@@ -454,22 +454,14 @@ FilmtipsetExtension.FilmtipsetApi.prototype.xmlHttpRequest = function(
         callback
         ) {
     var req = new XMLHttpRequest();
-    req.onload = function() {
-        if (req.readyState === 4) {
-            if (req.status === 200) {
-                callback(JSON.parse(req.responseText));
-                } 
-            else {
-                callback(null);
-                }
-            }
-        else {
-            callback(null);
-            }
-        };
-    req.onerror = function() {
-        callback(null);
-        };
-    req.open("GET", url, true);
+    req.addEventListener("load", function(){
+        if (req.status === 200) {
+            callback(JSON.parse(req.responseText));
+            } 
+        else { callback(null); }
+        });
+    req.addEventListener("error", function(){ callback(null); });
+    req.open("get", url, true);
+    if (this.logger) this.logger("fetching " + url);
     req.send();            
     };        

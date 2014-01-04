@@ -110,7 +110,7 @@ FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selecto
              * @param {FilmtipsetExtension.ContentScriptRequestCallback} contentScriptRequestCallback
              */
             function(contentScriptRequestCallback){
-                self.handleResponse.call(self, contentScriptRequestCallback);
+                self.handleResponse.call(self, contentScriptRequestCallback); // TODO: is .call() necessary?
             }); // setup the response handler for the port
         this.jQuery("body").append(
             FilmtipsetExtension.Links.progress_html

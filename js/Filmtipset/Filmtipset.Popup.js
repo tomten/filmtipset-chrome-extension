@@ -182,7 +182,7 @@ FilmtipsetExtension.Popup.prototype.hideAndGrade = function(tab, grade) {
 };
 
 FilmtipsetExtension.Popup.prototype.doGrade = function(tab, grade) {
-    var backgroundPage = chrome.extension.getBackgroundPage(); // HACK
+    var backgroundPage = chrome.extension.getBackgroundPage(); // HACK?
     var currentGradeInfo = backgroundPage.hosten.gradeForTab["tab" + tab.id];
     var cache = backgroundPage.hosten.cache;
     var film = new FilmtipsetExtension.FilmtipsetApi(

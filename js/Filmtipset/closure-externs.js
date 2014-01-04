@@ -4,3 +4,4 @@ var localStorage = {};
 var console = {};
 /** @type {?} */
 var Cache = {};
+/** @type {?} */

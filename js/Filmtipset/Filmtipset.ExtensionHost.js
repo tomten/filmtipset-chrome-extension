@@ -2,10 +2,11 @@
 
 /**
  * @constructor
- * @param {Array} gaq Reference to Google Analytics Async Queue. Used for event tracking.
+ * @param {Window} window Reference to background page window. Used for getting a reference to he Google Analytics Async Queue which is used for event tracking.
+ * @debug Run in debug mode?
  */
-FilmtipsetExtension.ExtensionHost = function(gaq, debug){
-    this.gaq = gaq;        
+FilmtipsetExtension.ExtensionHost = function(window, debug){
+    this.window = window;        
     this.debug = debug;
     this.cache = new Cache(
         -1, // Maximum size of cache = maximum size of storage medium 
@@ -17,8 +18,8 @@ FilmtipsetExtension.ExtensionHost = function(gaq, debug){
     };
     
 FilmtipsetExtension.ExtensionHost.prototype.initializeAnalytics = function(){
-    this.gaq.push(['_setAccount', 'UA-285667-8']); // Same account as released extension in Chrome Web Store
-    this.gaq.push(['_trackPageview']);
+    this.window._gaq.push(['_setAccount', 'UA-285667-8']); // Same account as released extension in Chrome Web Store
+    this.window._gaq.push(['_trackPageview']);
     var ga = document.createElement('script');
     ga.type = 'text/javascript';
     ga.async = true;
@@ -32,7 +33,7 @@ FilmtipsetExtension.ExtensionHost.prototype.track = function(
         action
         ) {
     this.log("tracking " + category + ": " + action);
-    // TODO: window._gaq.push(['_trackEvent', category, action]);
+    this.window._gaq.push(['_trackEvent', category, action]);
     };
 
 FilmtipsetExtension.ExtensionHost.prototype.initializeLocalStorage = function(){
@@ -85,9 +86,7 @@ FilmtipsetExtension.ExtensionHost.prototype.activateImdbPage = function(
     var tips = this;
     film.getInfoForImdbId(
         imdbId,
-        /**
-         * @param {Object} movieInfo Filmtipset movie info.
-         */
+        /** @param {Object} movieInfo Filmtipset movie info. */
         function(movieInfo) {
             var gradeInfo = film.getGradeInfoMovie(movieInfo);
             tips.gradeForTab["tab" + tabId] = gradeInfo;
@@ -103,131 +102,127 @@ FilmtipsetExtension.ExtensionHost.prototype.activateImdbPage = function(
             }
         );
     };
+
+/** Turns a serialized-and-deserialized Content Script Request into an ACTUAL Content Script Request. */
+FilmtipsetExtension.ExtensionHost.prototype.deserializeContentScriptRequest = function(contentScriptRequest) {
+    if (contentScriptRequest.type === "FilmtipsetExtension.GradeForLinkRequest") {
+        contentScriptRequest.__proto__ = FilmtipsetExtension.GradeForLinkRequest.prototype;
+        }
+    if (contentScriptRequest.type === "FilmtipsetExtension.GradeForSearchRequest") {
+        contentScriptRequest.__proto__ = FilmtipsetExtension.GradeForSearchRequest.prototype;
+        } 
+    if (contentScriptRequest.type === "FilmtipsetExtension.ActivateImdbPageRequest") {
+        contentScriptRequest.__proto__ = FilmtipsetExtension.ActivateImdbPageRequest.prototype;
+        } 
+    if (contentScriptRequest.type === "FilmtipsetExtension.TrackRequest") {
+        contentScriptRequest.__proto__ = FilmtipsetExtension.TrackRequest.prototype;
+        } 
+    };
+
+/** Handles a Grade For Search request from a content script. */
+FilmtipsetExtension.ExtensionHost.prototype.handleGradeForSearchRequest = function(gradeForSearchRequest, port) {
+    var film2 = new FilmtipsetExtension.FilmtipsetApi(
+        localStorage.accessKey, 
+        localStorage.userKey, 
+        this.cache, 
+        this.log
+        );
+    var titleToSearchFor = gradeForSearchRequest.query;
+    var endingThe = /, The$/;
+    if (titleToSearchFor.match(endingThe)) {
+        titleToSearchFor = 'The ' + titleToSearchFor.replace(endingThe, '');
+        }
+    film2.searchExact(
+        titleToSearchFor, 
+        function(movieInfos) {
+            var movieInfo = 
+                movieInfos.length > 0 ? 
+                    movieInfos[0] : 
+                    {}; // HACK
+            var gradeInfo = film2.getGradeInfoMovie(movieInfo);
+            var common = new FilmtipsetExtension.Common();
+            var iconUrl = common.getIconFromGradeInfo(gradeInfo);
+            port.postMessage(
+                new FilmtipsetExtension.ContentScriptRequestCallback( 
+                    gradeForSearchRequest.reference, 
+                    iconUrl, 
+                    movieInfo 
+                    )
+                );
+            }
+        );
+    };
+    
+/** Handles a Grade For Link request from a content script. */
+FilmtipsetExtension.ExtensionHost.prototype.handleGradeForLinkRequest = function(gradeForLinkRequest, port) {
+    var film = new FilmtipsetExtension.FilmtipsetApi(
+        localStorage.accessKey, 
+        localStorage.userKey, 
+        this.cache, 
+        this.log
+        );
+    film.getInfoForImdbId(
+        gradeForLinkRequest.imdbId,
+        function(movieInfo) {
+            var gradeInfo = film.getGradeInfoMovie(movieInfo);
+            var common = new FilmtipsetExtension.Common();
+            var iconUrl = common.getIconFromGradeInfo(gradeInfo);
+            port.postMessage(
+                new FilmtipsetExtension.ContentScriptRequestCallback( 
+                    gradeForLinkRequest.reference, 
+                    iconUrl, 
+                    movieInfo 
+                    )
+                );
+            }
+        );
+    };
     
 FilmtipsetExtension.ExtensionHost.prototype.initializeMessageListener = function(){
     var self = this;
-    
+    // for complex messaging, use a port
     chrome.runtime.onConnect.addListener(
-        /**
-         * @param {chrome.runtime.Port} port
-         */
+        /** @param {chrome.runtime.Port} port */
         function(port) {
-        self.log("Content script connected");
-        port.onDisconnect.addListener(function() {
-            self.log("Content script disconnected");
-            });
-        port.onMessage.addListener(function(contentScriptRequest) {
-            
-            if (contentScriptRequest.type === "FilmtipsetExtension.GradeForLinkRequest") {
-                contentScriptRequest.__proto__ = FilmtipsetExtension.GradeForLinkRequest.prototype;
-                }
-
-            if (contentScriptRequest.type === "FilmtipsetExtension.GradeForSearchRequest") {
-                contentScriptRequest.__proto__ = FilmtipsetExtension.GradeForSearchRequest.prototype;
-                } 
-            
-            if (contentScriptRequest instanceof FilmtipsetExtension.GradeForLinkRequest) {
-                var film = new FilmtipsetExtension.FilmtipsetApi(
-                    localStorage.accessKey, 
-                    localStorage.userKey, 
-                    self.cache, 
-                    self.log
-                    );
-                film.getInfoForImdbId(
-                    contentScriptRequest.imdbId,
-                    function(movieInfo) {
-                        var gradeInfo = film.getGradeInfoMovie(movieInfo);
-                        var common = new FilmtipsetExtension.Common();
-                        var iconUrl = common.getIconFromGradeInfo(gradeInfo);
-                        port.postMessage(
-                            new FilmtipsetExtension.ContentScriptRequestCallback( 
-                                contentScriptRequest.reference, 
-                                iconUrl, 
-                                movieInfo 
-                                )
-                            );
-                        }
-                    );
-                } 
-            
-            if (contentScriptRequest instanceof FilmtipsetExtension.GradeForSearchRequest) {
-                var film2 = new FilmtipsetExtension.FilmtipsetApi(
-                    localStorage.accessKey, 
-                    localStorage.userKey, 
-                    self.cache, 
-                    self.log
-                    );
-                var titleToSearchFor = contentScriptRequest.query;
-                var endingThe = /, The$/;
-                if (titleToSearchFor.match(endingThe)) {
-                    titleToSearchFor = 'The ' + titleToSearchFor.replace(endingThe, '');
+            self.log("Content script connected");
+            port.onDisconnect.addListener(function() { self.log("Content script disconnected"); });
+            port.onMessage.addListener(
+                /** @param {(FilmtipsetExtension.ActivateImdbPageRequest|FilmtipsetExtension.TrackRequest|FilmtipsetExtension.GradeForLinkRequest|FilmtipsetExtension.GradeForSearchRequest)} contentScriptRequest Request from content script. */
+                function(contentScriptRequest) {
+                    self.deserializeContentScriptRequest(contentScriptRequest);
+                    if (contentScriptRequest instanceof FilmtipsetExtension.GradeForLinkRequest) {
+                        self.handleGradeForLinkRequest(contentScriptRequest, port);
+                        } 
+                    if (contentScriptRequest instanceof FilmtipsetExtension.GradeForSearchRequest) {
+                        self.handleGradeForSearchRequest(contentScriptRequest, port);
+                        } 
                     }
-                film2.searchExact(
-                    titleToSearchFor, // HACK: Should be imdbTitle
-                    function(movieInfos) {
-                        var movieInfo = 
-                            movieInfos.length > 0 ? 
-                                movieInfos[0] : 
-                                {}; // HACK
-                        var gradeInfo = film2.getGradeInfoMovie(movieInfo);
-                        var common = new FilmtipsetExtension.Common();
-                        var iconUrl = common.getIconFromGradeInfo(gradeInfo);
-                        port.postMessage(
-                            new FilmtipsetExtension.ContentScriptRequestCallback( 
-                                contentScriptRequest.reference, 
-                                iconUrl, 
-                                movieInfo 
-                                )
-                            );
-                        }
-                    );
-                } 
-                
-            });
-        });
-    
+                );
+            }
+        );
+    // for simple messaging, don't use a port
     chrome.runtime.onMessage.addListener(
         /**
          @param {(FilmtipsetExtension.ActivateImdbPageRequest|FilmtipsetExtension.TrackRequest|FilmtipsetExtension.GradeForLinkRequest|FilmtipsetExtension.GradeForSearchRequest)} request Request from content script.
          @param {{ tab }} sender Sending tab.
-         @param {function(*)} callback Callback function to content script.
          */
         function(
             request, 
-            sender, 
-            callback
+            sender
             ) {
-            
-            // TODO: Automate this somehow... without eval
-            
-            if (request.type === "FilmtipsetExtension.ActivateImdbPageRequest") {
-                request.__proto__ = FilmtipsetExtension.ActivateImdbPageRequest.prototype;
-            } 
-            
-            if (request.type === "FilmtipsetExtension.TrackRequest") {
-                request.__proto__ = FilmtipsetExtension.TrackRequest.prototype;
-            } 
-            
+            self.deserializeContentScriptRequest(request);
             if (request instanceof FilmtipsetExtension.ActivateImdbPageRequest) {
                 self.activateImdbPage(
                     sender.tab.id, 
                     request.imdbId
                     );
-                } 
-            
+                }             
             if (request instanceof FilmtipsetExtension.TrackRequest) {
                 self.track(
                     request.category, 
                     request.action
                     );
                 }
-            }
-            
-        );
-        
+            }            
+        );        
     }; 
-    
-// TODO: move code below to "event page initializer" script file
-var hosten = new FilmtipsetExtension.ExtensionHost(null, true); // TODO
-hosten.initializeLocalStorage();
-hosten.initializeMessageListener();
