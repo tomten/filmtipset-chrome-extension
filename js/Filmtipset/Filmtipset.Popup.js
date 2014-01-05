@@ -7,22 +7,6 @@
 FilmtipsetExtension.Popup = function (jQuery){
     this.jQuery = jQuery;
     };
-
-/**
- * Returns true if any element in the array matches the supplied predicate function.
- * @param {function(*)} comparer Predicate function for matching an element.
- * @return {boolean} True if any element in the array matches the supplied predicate function.
- */
-Array.prototype.any = function(comparer){
-    var self = this;
-    for (var elementIndex in self) {
-        var element = self[elementIndex];
-        var match = comparer(element);
-        if (match)
-            return true;
-        }
-    return false;
-    };
     
 /**
  * Draws the buttons in the popup.
@@ -81,7 +65,7 @@ FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
         if (backgroundPage.hosten.wantedList) 
             wants = backgroundPage.filmtipset
                 .wantedList
-                .any(function(movie){ return currentGradeInfo.id == movie.movie.id; });
+                .some(function(movie){ return currentGradeInfo.id == movie.movie.id; });
         if (!wants) {
             var wantedDiv = this.jQuery('<div id="want" class="i18n voteimage want"></div>');
             this.jQuery("#vote").append(wantedDiv);
