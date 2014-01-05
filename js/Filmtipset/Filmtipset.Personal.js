@@ -52,7 +52,6 @@ FilmtipsetExtension.Personal.prototype.loadOptions = function(){
 
 FilmtipsetExtension.Personal.prototype.saveOptions = function() {
     var jQuery = this.jQuery;
-    // TODO: validate user key
     var $userKey = this.jQuery("input[name='userKey']");
     var userKeyToValidate = $userKey.val();
     var film = new FilmtipsetExtension.FilmtipsetApi(

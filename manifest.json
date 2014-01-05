@@ -74,7 +74,7 @@
     "options_page": "extension-pages/personal.html",
     "content_scripts": [
         {
-            "matches": [ "http://*.google.se/movies?*" ],
+            "matches": [ "http://*.google.se/movies?*", "https://*.google.se/movies?*" ],
             "js": [ 
                 "content-scripts/jquery-2.0.3.min.js",
                 "content-scripts/jquery.regex.js", 
@@ -88,7 +88,7 @@
             "run_at": "document_start"
         },
         {
-            "matches": [ "http://*.imdb.com/*" ],
+            "matches": [ "http://*.imdb.com/*", "https://*.imdb.com/*" ],
             "js": [ 
                 "content-scripts/jquery-2.0.3.min.js",
                 "content-scripts/jquery.regex.js", 
@@ -104,6 +104,7 @@
         },
         {
             "matches": [ "http://*/*", "https://*/*" ],
+            "exclude_matches": [ "http://*.imdb.com/*", "https://*.imdb.com/*", "http://*.google.se/movies?*", "https://*.google.se/movies?*" ],
             "css": [ "content-scripts/other.css", "content-scripts/tipTip.css" ],
             "js": [ 
                 "content-scripts/jquery-2.0.3.min.js",
