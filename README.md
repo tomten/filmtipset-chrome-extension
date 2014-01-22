@@ -16,7 +16,7 @@ Version 2.10:
 
 Version 2.5:
 
-- Google Movies support for countries (actually only Sweden) without IMDB links in showtime results
+- Google Movies support for Sweden
 
 Version 2.4:
 
