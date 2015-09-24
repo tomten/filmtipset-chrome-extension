@@ -1,4 +1,7 @@
 $(function(){
     var links = new FilmtipsetExtension.Links($);
-    links.processLinks();
+    window.setInterval(function(){ 
+		links.processLinks(); 
+		}, 
+		2000);	
     });
