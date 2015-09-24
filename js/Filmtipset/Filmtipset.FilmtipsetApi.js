@@ -6,7 +6,7 @@
  * @param {string} accessKey Application-specific access key for Filmtipset API.
  * @param {string} userKey User-specific user key for Filmtipset API.
  * @param {Object} cache Cache instance used by API. Must implement Monsur cache methods and properties.
- * @param {Object} logger Logger instance used by API. Must implement log(msg) method.
+ * @param {Function} logger Logging method.
 */
 FilmtipsetExtension.FilmtipsetApi = function (
         accessKey, 
@@ -111,7 +111,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getWantedList = function(callback) {
                     .data // .data contains the Wanted List, the rest is metadata (.request, .user etc)
                     [0] // Data array only has one element
                     .movies // .movies contains the Filmtipset Movies, the rest is metadata (.count, .title etc)
-                    .select(function(x){ // Project a new array from the Filmtipset Movie array
+                    .map(function(x){ // Project a new array from the Filmtipset Movie array
                         return x.movie; // Each Filmtipset Movie has all its data in .movie
                         })
                 );
@@ -145,7 +145,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.addToWantedListForFilmtipsetId = fun
                     .data // .data contains the Wanted List, the rest is metadata (.request, .user etc)
                     [0] // Data array only has one element
                     .movies // .movies contains the Filmtipset Movies, the rest is metadata (.count, .title etc)
-                    .select(function(x){ // Project a new array from the Filmtipset Movie array
+                    .map(function(x){ // Project a new array from the Filmtipset Movie array
                         return x.movie; // Each Filmtipset Movie has all its data in .movie
                         })
                 );
@@ -248,7 +248,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.search = function(
                 searchResponse[0]
                 .data[0]
                 .hits
-                .select(function(hit){
+                .map(function(hit){
                     return hit.movie;
                     });
             cache.setItem(
@@ -272,46 +272,6 @@ Date.prototype.addDays = function(days)
     dat.setDate(dat.getDate() + days);
     return dat;
 };    
-
-/**
- * Returns all elements matching a predicate.
- * @param {function(?):boolean} predicate Predicate function. 
- *     Input parameter will be element under test. 
- * @return {Array} Reduced array.
- */
-Array.prototype.where = function(predicate){
-    var ret = [];
-    this.forEach(
-        /**
-         @param {?} x Element under test.
-         */
-        function(x){
-            if (predicate(x) === true) {
-                ret.push(x);
-                }
-            }
-        );
-    return ret;
-    };
-
-/**
- Projects elements in an array onto a new array using a projector function.
- @param {function(?):?} projector Projector function. 
-     Input parameter is element in array.
- @return {Array} Projected array. 
- */
-Array.prototype.select = function(projector){
-    var ret = [];
-    this.forEach(
-        /**
-         @param {?} x Element to project.
-         */
-        function(x){
-            ret.push(projector(x));
-            }
-        );
-    return ret;
-    };
     
 /**
  * Find movies whose original or Swedish titles exactly match a query.
@@ -326,7 +286,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.searchExact = function(
     this.search(
         query, 
         function(results){
-            var exactResults = results.where(function(result){
+            var exactResults = results.filter(function(result){
                 var isExactResult = 
                     result.orgname == query ||
                     result.name == query; // TODO: Search alt_title.split(',') as well?                       
@@ -379,6 +339,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getInfoForImdbId = function(
                 { expirationAbsolute: (new Date()).addDays(7) } // Save Filmtipset movie info for a week
                 );
             callback(data);
+            return;
             }                 
         );
     };
@@ -453,22 +414,14 @@ FilmtipsetExtension.FilmtipsetApi.prototype.xmlHttpRequest = function(
         callback
         ) {
     var req = new XMLHttpRequest();
-    req.onload = function() {
-        if (req.readyState === 4) {
-            if (req.status === 200) {
-                callback(JSON.parse(req.responseText));
-                } 
-            else {
-                callback(null);
-                }
-            }
-        else {
-            callback(null);
-            }
-        };
-    req.onerror = function() {
-        callback(null);
-        };
-    req.open("GET", url, true);
+    req.addEventListener("load", function(){
+        if (req.status === 200) {
+            callback(JSON.parse(req.responseText));
+            } 
+        else { callback(null); }
+        });
+    req.addEventListener("error", function(){ callback(null); });
+    req.open("get", url, true);
+    if (this.logger) this.logger("fetching " + url);
     req.send();            
     };        

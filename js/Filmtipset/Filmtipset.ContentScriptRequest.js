@@ -1,42 +1,68 @@
 /**
  @constructor
- @param {string} action Action.
- @param {FilmtipsetExtension.ContentScriptRequest.TrackData} trackData Data for tracking requests.
- @param {FilmtipsetExtension.ContentScriptRequest.ImdbData} imdbData Data for IMDB requests.
+ @param {string} reference Reference passed to original content script request.
+ @param {string} gradeIconUrl Resulting grade icon URL for original content script request.
+ @param {Object} movieInfo Movie info.
  */
-FilmtipsetExtension.ContentScriptRequest = function(
-        action, 
-        trackData,
-        imdbData
+FilmtipsetExtension.ContentScriptRequestCallback = function(
+        reference, 
+        gradeIconUrl,
+        movieInfo
         ){
-    this.action = action;
-    this.trackData = trackData;
-    this.imdbData = imdbData;
+    this.reference = reference;
+    this.gradeIconUrl = gradeIconUrl;
+    this.movieInfo = movieInfo;
     };
 
 /**
  @constructor
- @param {string} trackCategory Tracking category.
- @param {string} trackAction Tracking action.
+ @param {string} imdbId IMDB ID.
  */
-FilmtipsetExtension.ContentScriptRequest.TrackData = function(
-        trackCategory, 
-        trackAction
+FilmtipsetExtension.ActivateImdbPageRequest = function(
+        imdbId
         ){
-    this.trackCategory = trackCategory;
-    this.trackAction = trackAction;
+    this.imdbId = imdbId;
+    this.type = "FilmtipsetExtension.ActivateImdbPageRequest"; // used for deserialization of request
     };
-    
+
 /**
  @constructor
  @param {string} imdbId IMDB ID.
- @param {string} fakeId Content script page request reference. 
+ @param {string} reference Reference for callback.
  */
-FilmtipsetExtension.ContentScriptRequest.ImdbData = function(
+FilmtipsetExtension.GradeForLinkRequest = function(
         imdbId,
-        fakeId
+        reference
         ){
     this.imdbId = imdbId;
-    this.fakeId = fakeId;
+    this.reference = reference;
+    this.type = "FilmtipsetExtension.GradeForLinkRequest"; // used for deserialization of request
     };
-    
+
+/**
+ @constructor
+ @param {string} query Movie search query.
+ @param {string} reference Reference for callback.
+ */
+FilmtipsetExtension.GradeForSearchRequest = function(
+        query,
+        reference
+        ){
+    this.query = query;
+    this.reference = reference;
+    this.type = "FilmtipsetExtension.GradeForSearchRequest"; // used for deserialization of request
+    };
+
+/**
+ @constructor
+ @param {string} category Tracking category.
+ @param {string} action Tracking action.
+ */
+FilmtipsetExtension.TrackRequest = function(
+        category,
+        action
+        ){
+    this.category = category;
+    this.action = action;
+    this.type = "FilmtipsetExtension.TrackRequest"; // used for deserialization of request
+    };

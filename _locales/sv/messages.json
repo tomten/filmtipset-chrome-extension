@@ -12,5 +12,6 @@
 	"userKeyLabel": { "message": "Nyckel" },
 	"want": { "message": "Vill se" },
 	"filmtipsetpage": { "message": "Filmtipsetsida" },
-	"invalidApiKey": { "message": "Felaktig API-nyckel från Mina Sidor på Filmtipset! Kontrollera att du matat in exakt rätt!" }
+	"invalidApiKey": { "message": "Felaktig API-nyckel från Mina Sidor på Filmtipset! Kontrollera att du matat in exakt rätt!" },
+    "progressHtml": { "message": "Hämtar filmtips för <span id='filmLinkCount'> %linkCount% </span> filmer..." }
 }

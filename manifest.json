@@ -1,9 +1,10 @@
 {
     "manifest_version": 2,
+    "minimum_chrome_version": "22",
     "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
     "name": "__MSG_extensionName__",
     "short_name": "__MSG_extensionShortName__",
-    "version": "2.10",
+    "version": "2.11",
     "web_accessible_resources": [  
         "extension-pages/filmtipset.html.js",
         "extension-pages/grade.html.js",
@@ -54,7 +55,18 @@
         "48": "images/icons/48.png",
         "128": "images/icons/128.png" 
     },
-    "background": { "page": "extension-pages/filmtipset.html" },
+    "background": { 
+        "persistent": false, 
+        "scripts": [
+            "js/cache.js",
+            "js/Filmtipset/Filmtipset.js",
+            "js/Filmtipset/Filmtipset.FilmtipsetApi.js",
+            "js/Filmtipset/Filmtipset.Common.js",
+            "js/Filmtipset/Filmtipset.ContentScriptRequest.js",
+            "js/Filmtipset/Filmtipset.ExtensionHost.js",
+            "extension-pages/background.js"
+        ]
+    },
     "page_action": {
         "default_icon": "images/pageactions/unknown.png",
         "default_popup": "extension-pages/grade.html"
@@ -62,7 +74,7 @@
     "options_page": "extension-pages/personal.html",
     "content_scripts": [
         {
-            "matches": [ "http://*.google.se/movies?*" ],
+            "matches": [ "http://*.google.se/movies?*", "https://*.google.se/movies?*" ],
             "js": [ 
                 "content-scripts/jquery-2.0.3.min.js",
                 "content-scripts/jquery.regex.js", 
@@ -76,7 +88,7 @@
             "run_at": "document_start"
         },
         {
-            "matches": [ "http://*.imdb.com/*" ],
+            "matches": [ "http://*.imdb.com/*", "https://*.imdb.com/*" ],
             "js": [ 
                 "content-scripts/jquery-2.0.3.min.js",
                 "content-scripts/jquery.regex.js", 
@@ -92,6 +104,7 @@
         },
         {
             "matches": [ "http://*/*", "https://*/*" ],
+            "exclude_matches": [ "http://*.imdb.com/*", "https://*.imdb.com/*", "http://*.google.se/movies?*", "https://*.google.se/movies?*" ],
             "css": [ "content-scripts/other.css", "content-scripts/tipTip.css" ],
             "js": [ 
                 "content-scripts/jquery-2.0.3.min.js",
