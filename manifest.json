@@ -4,7 +4,7 @@
     "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
     "name": "__MSG_extensionName__",
     "short_name": "__MSG_extensionShortName__",
-    "version": "2.11",
+    "version": "2.14",
     "web_accessible_resources": [  
         "extension-pages/filmtipset.html.js",
         "extension-pages/grade.html.js",

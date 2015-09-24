@@ -1,0 +1,5 @@
+Filmtipset.ExtensionHost.js:112: ERROR - Bad type annotation. Unknown type chrome.runtime.Port
+         * @param {chrome.runtime.Port} port
+                   ^
+
+1 error(s), 0 warning(s)

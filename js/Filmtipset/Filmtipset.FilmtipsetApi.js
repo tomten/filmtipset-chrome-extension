@@ -406,7 +406,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfoMovie = function(movie) 
 /**
  * GETs an URL.
  * @param {string} url Request URL. 
- * @param {function(*)} callback Function to call upon completion. 
+ * @param {function((null|Object))} callback Function to call upon completion. 
  *     Input parameter will be response for request to URL, or null upon any error. 
  */
 FilmtipsetExtension.FilmtipsetApi.prototype.xmlHttpRequest = function(

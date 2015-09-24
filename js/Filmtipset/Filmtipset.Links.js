@@ -7,7 +7,8 @@ FilmtipsetExtension.Links = function (jQuery){
     this.jQuery = jQuery;
     this.$links = [];
     this.linkProcessingPort = null;
-    };
+    this.running = false;
+	};
 
 /** @const */
 FilmtipsetExtension.Links.image_html_template = '<img hidden style="position:absolute;" width="20" height="20" src="%grade%" />';    
@@ -54,7 +55,8 @@ FilmtipsetExtension.Links.prototype.handleResponse = function(contentScriptReque
     var gradeUrl = contentScriptRequestCallback.gradeIconUrl;
     var movieInfo = contentScriptRequestCallback.movieInfo;
     var $link = this.jQuery(this.$links[reference]); 
-    if (
+    $link.attr("filmtipsified", "true");
+	if (
         movieInfo &&
         movieInfo.name
         )
@@ -77,6 +79,7 @@ FilmtipsetExtension.Links.prototype.handleResponse = function(contentScriptReque
     $link.append($gradeImage);
     $gradeImage.fadeIn(200); 
     if (reference >= this.$links.length - 1) { // HACK: Should be == something
+		this.running = false;
         this.jQuery("#filmtipsetImdbLinks").stop().slideUp(500, "linear", function(){});
         this.linkProcessingPort.disconnect();
         }
@@ -101,8 +104,11 @@ FilmtipsetExtension.Links.prototype.handleResponse = function(contentScriptReque
  @private 
  */
 FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selector){
-    var self = this;
-    this.$links = this.jQuery(link_selector); // collect all links to follow
+	var self = this;
+	if (this.running) 
+		return;
+    this.running = true;
+	this.$links = this.jQuery(link_selector).not('[filmtipsified]'); // collect all unprocessed links to follow
     if (this.$links.length > 0) { // are there any links to follow?
         this.linkProcessingPort = chrome.runtime.connect(); // setup the port used to communicate with the event page
         this.linkProcessingPort.onMessage.addListener(
@@ -112,17 +118,26 @@ FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selecto
             function(contentScriptRequestCallback){
                 self.handleResponse.call(self, contentScriptRequestCallback); // TODO: is .call() necessary?
             }); // setup the response handler for the port
-        this.jQuery("body").append(
-            FilmtipsetExtension.Links.progress_html
-                .replace("%remsaUrl%", chrome.extension.getURL("images/progress.png"))
-                .replace("%linkCount%", this.$links.length)
-            );
-        this.jQuery("#filmtipsetImdbLinks")
+        
+		if (this.jQuery("#filmtipsetImdbLinks").length === 0)
+			this.jQuery("body").append(
+				FilmtipsetExtension.Links.progress_html
+					.replace(
+						"%remsaUrl%", 
+						chrome.extension.getURL("images/progress.png")
+						)
+				);
+				
+		$("#filmLinkCount").html(this.$links.length);
+        
+		this.jQuery("#filmtipsetImdbLinks")
             //.hide() // Hide the progress bar and...
             .delay(3000) // ...wait 3 seconds before...
             .slideDown(500, "linear", function(){}); // ...showing it (to avoid it showing it at all if possible)
         this.processOneLink(0);
         }
+	else 
+		this.running = false;
     };
 
 /**
