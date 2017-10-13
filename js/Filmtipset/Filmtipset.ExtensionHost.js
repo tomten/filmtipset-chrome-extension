@@ -11,7 +11,7 @@ FilmtipsetExtension.ExtensionHost = function(window, debug){
     this.cache = new Cache(
         -1, // Maximum size of cache = maximum size of storage medium 
         this.debug, // Debug?
-        new Cache.LocalStorageCacheStorage("filmtipset2.14")); // Use this extension's Local Storage for persisting the cache
+        new Cache.LocalStorageCacheStorage("filmtipset2.15")); // Use this extension's Local Storage for persisting the cache
     // TODO: When to clear out obsolete caches?
     this.gradeForTab = {}; // Session-scoped storage for the current page action grades for different browser tabs
     this.wantedList = undefined; // Session-scoped storage for items in the user's Filmtipset Wanted List
