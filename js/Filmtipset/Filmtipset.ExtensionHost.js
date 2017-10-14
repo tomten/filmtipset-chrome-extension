@@ -3,7 +3,7 @@
 /**
  * @constructor
  * @param {Window} window Reference to background page window. Used for getting a reference to he Google Analytics Async Queue which is used for event tracking.
- * @debug Run in debug mode?
+ * @param {Boolean} debug Run in debug mode?
  */
 FilmtipsetExtension.ExtensionHost = function(window, debug){
     this.window = window;        
@@ -73,6 +73,11 @@ FilmtipsetExtension.ExtensionHost.prototype.hidePageActionForTab = function(
     callback();
     };
 
+/**
+ * Activates the extension for a page on IMDB.
+ * @param {string} tabId Current browser tab ID.
+ * @param {string} imdbId IMDB movie ID. 
+ */
 FilmtipsetExtension.ExtensionHost.prototype.activateImdbPage = function(
         tabId, 
         imdbId
@@ -83,17 +88,17 @@ FilmtipsetExtension.ExtensionHost.prototype.activateImdbPage = function(
         this.cache, 
         this.log
         );
-    var tips = this;
+    var self = this;
     film.getInfoForImdbId(
         imdbId,
         /** @param {Object} movieInfo Filmtipset movie info. */
         function(movieInfo) {
             var gradeInfo = film.getGradeInfoMovie(movieInfo);
-            tips.gradeForTab["tab" + tabId] = gradeInfo;
+            self.gradeForTab["tab" + tabId] = gradeInfo;
             var common = new FilmtipsetExtension.Common();
             var iconUrl = common.getIconFromGradeInfo(gradeInfo);
             var title = common.getTitleFromGradeInfo(gradeInfo);
-            tips.showPageActionForTab(
+            self.showPageActionForTab(
                 iconUrl, 
                 title, 
                 tabId, 
@@ -182,7 +187,7 @@ FilmtipsetExtension.ExtensionHost.prototype.initializeMessageListener = function
     var self = this;
     // for complex messaging, use a port
     chrome.runtime.onConnect.addListener(
-        /** @param {chrome.runtime.Port} port */
+        /** @param {Object} port */
         function(port) {
             self.log("Content script connected");
             port.onDisconnect.addListener(function() { self.log("Content script disconnected"); });
