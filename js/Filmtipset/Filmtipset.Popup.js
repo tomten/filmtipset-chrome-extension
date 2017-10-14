@@ -19,7 +19,7 @@ FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
     if (currentGradeInfo) {
         if (currentGradeInfo.grade) {
             var removeVoteDiv = this.jQuery(
-                '<div class="voteimage ungrade"><img alt="x" src="' + chrome.extension.getURL('images/grade/nograde.png') + '" /></div>' // HACK: Use templating
+                '<div class="voteimage ungrade"><a title="Ta bort betyg"><img alt="Ta bort betyg" src="' + chrome.extension.getURL('images/grade/nograde.png') + '" /></a></div>' // HACK: Use templating
                 );
             this.jQuery("#vote").append(removeVoteDiv);
             removeVoteDiv.click(function(){ 
@@ -31,7 +31,7 @@ FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
             var voteDiv;
             if (i == currentGradeInfo.grade) {
                 voteDiv = this.jQuery(
-                    '<div grade="%i%" class="voteimage grade"><img alt="%i%" src="%gradeImgUrl%" /></div>'
+                    '<div grade="%i%" class="voteimage grade"><a title="Betygsätt %i%"><img alt="%i%" src="%gradeImgUrl%" /></a></div>'
                         .replace('%i%', i.toString())
                         .replace(
                             '%gradeImgUrl%', 
@@ -67,7 +67,7 @@ FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
                 .wantedList
                 .some(function(movie){ return currentGradeInfo.id == movie.movie.id; });
         if (!wants) {
-            var wantedDiv = this.jQuery('<div id="want" class="i18n voteimage want"></div>');
+            var wantedDiv = this.jQuery('<a title="Vill se"><div id="want" class="i18n voteimage want"></div></a>');
             this.jQuery("#vote").append(wantedDiv);
             wantedDiv.click(function(){ 
                 popup.want(); 
@@ -76,7 +76,7 @@ FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
                 });
             }
         }
-        var filmtipsetDiv = this.jQuery('<div id="filmtipsetpage" class="i18n voteimage filmtipset"></div>');
+        var filmtipsetDiv = this.jQuery('<a title="Filmtipsetsida"><div id="filmtipsetpage" class="i18n voteimage filmtipset"></div></a>');
         filmtipsetDiv.click(function(){
             backgroundPage.hosten.track("popup", "goToFilmtipsetPage");
             chrome.tabs.getSelected(
