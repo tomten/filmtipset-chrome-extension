@@ -2,8 +2,9 @@
 
 /**
  * @constructor
+ * @param {Object} jQuery jQuery
  */
-FilmtipsetExtension.Links = function (jQuery){
+FilmtipsetExtension.Links = function (jQuery) {
     this.jQuery = jQuery;
     this.$links = [];
     this.linkProcessingPort = null;
@@ -52,7 +53,7 @@ FilmtipsetExtension.Links.prototype.processLinks = function(){
  * @param {FilmtipsetExtension.ContentScriptRequestCallback} contentScriptRequestCallback Response from event page.
  */    
 FilmtipsetExtension.Links.prototype.handleResponse = function(contentScriptRequestCallback) {
-    var reference = parseint(contentScriptRequestCallback.reference, 10);
+    var reference = parseInt(contentScriptRequestCallback.reference, 10);
     var gradeUrl = contentScriptRequestCallback.gradeIconUrl;
     var movieInfo = contentScriptRequestCallback.movieInfo;
     var $link = this.jQuery(this.$links[reference]); 
