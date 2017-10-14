@@ -82,12 +82,15 @@ FilmtipsetExtension.Common.prototype.getTitleFromGradeInfo = function(gradeInfo)
  @constructor
  @param {string} type Grade type ("seen", ...).
  @param {number} grade Grade value (0-5).
+ @param {string} id Movie ID.
  */
 FilmtipsetExtension.GradeInfo = function(
         type, 
-        grade
+        grade,
+        id
         ){
     this.type = type;
     this.grade = grade;
-    };
+    this.id = id;
+};
 

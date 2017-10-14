@@ -347,7 +347,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getInfoForImdbId = function(
 /**
  * Determines the grade and grade type for a Filmtipset Movie Info Response.
  * @param {?} json Filmtipset Movie Info Response
- * @return {(FilmtipsetExtension.GradeInfo|null)} Object with .grade, .type and .id for movie. 
+ * @return {FilmtipsetExtension.GradeInfo} Object with .grade, .type and .id for movie. 
  *     Or null on error.
  */
 FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfo = function(json) {
@@ -372,7 +372,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfo = function(json) {
 /**
  * Determines the grade and grade type for a Filmtipset Movie.
  * @param {?} movie Filmtipset Movie 
- * @return {(FilmtipsetExtension.GradeInfo|null)} Object with .grade, .type and .id for movie.
+ * @return {FilmtipsetExtension.GradeInfo} Object with .grade, .type and .id for movie.
  *     Or null on error.
  */
 FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfoMovie = function(movie) { 
@@ -385,12 +385,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfoMovie = function(movie) 
         if (grade) {
             var gradevalue = grade.value; // null, "1", "2", "3", "4", "5"
             var gradetype = grade.type; // "none", "seen", "calculated"
-            var gradeAndType = 
-            {
-                "grade": gradevalue,
-                "type": gradetype,
-                "id": id
-            };
+            var gradeAndType = new FilmtipsetExtension.GradeInfo(gradetype, gradevalue, id);
             return gradeAndType;
             } 
             else {
