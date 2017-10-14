@@ -38,6 +38,7 @@ FilmtipsetExtension.Links.prototype.processLinksOnGoogleMovies = function(){
 
 /** Filmtipsifies internal IMDB links on IMDB */    
 FilmtipsetExtension.Links.prototype.processLinksOnImdb = function(){
+    // TODO: Doesn't seem to work for all links?
     this.processLinksInternal(FilmtipsetExtension.Links.jquery_imdb_link_selector_on_imdb);
     };
 
@@ -51,7 +52,7 @@ FilmtipsetExtension.Links.prototype.processLinks = function(){
  * @param {FilmtipsetExtension.ContentScriptRequestCallback} contentScriptRequestCallback Response from event page.
  */    
 FilmtipsetExtension.Links.prototype.handleResponse = function(contentScriptRequestCallback) {
-    var reference = contentScriptRequestCallback.reference;
+    var reference = parseint(contentScriptRequestCallback.reference, 10);
     var gradeUrl = contentScriptRequestCallback.gradeIconUrl;
     var movieInfo = contentScriptRequestCallback.movieInfo;
     var $link = this.jQuery(this.$links[reference]); 
@@ -128,7 +129,7 @@ FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selecto
 						)
 				);
 				
-		$("#filmLinkCount").html(this.$links.length);
+		this.jQuery("#filmLinkCount").html(this.$links.length);
         
 		this.jQuery("#filmtipsetImdbLinks")
             //.hide() // Hide the progress bar and...
@@ -153,7 +154,7 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
         self.linkProcessingPort.postMessage(
             new FilmtipsetExtension.GradeForLinkRequest(
                 imdbIdt,
-                currentLinkNumber
+                currentLinkNumber.toString()
                 )
             );
         }
@@ -161,7 +162,7 @@ FilmtipsetExtension.Links.prototype.processOneLink = function(currentLinkNumber)
         self.linkProcessingPort.postMessage(
             new FilmtipsetExtension.GradeForSearchRequest(
                 $a.text(),
-                currentLinkNumber
+                currentLinkNumber.toString()
                 )
             );
         }
