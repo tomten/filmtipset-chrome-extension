@@ -13,95 +13,95 @@ FilmtipsetExtension.Popup = function (jQuery){
  * @param {{ id: number }} tab Active tab.
  */
 FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
-    var backgroundPage = chrome.extension.getBackgroundPage(); // HACK: Use sendMessage 
-    var currentGradeInfo = backgroundPage.hosten.gradeForTab["tab" + tab.id];
     var popup = this;
-    if (currentGradeInfo) {
-        if (currentGradeInfo.grade) {
-            var removeVoteDiv = this.jQuery(
-                '<div class="voteimage ungrade"><a title="Ta bort betyg"><img alt="Ta bort betyg" src="' + chrome.extension.getURL('images/grade/nograde.png') + '" /></a></div>' // HACK: Use templating
-                );
-            this.jQuery("#vote").append(removeVoteDiv);
-            removeVoteDiv.click(function(){ 
-                popup.vote('0'); 
-                backgroundPage.hosten.track("popup", "removeVote");
-                });
-        }
-        for (var i = 1; i <= 5; i++) {
-            var voteDiv;
-            if (i == currentGradeInfo.grade) {
-                voteDiv = this.jQuery(
-                    '<div grade="%i%" class="voteimage grade"><a title="Betygsätt %i%"><img alt="%i%" src="%gradeImgUrl%" /></a></div>'
-                        .replace('%i%', i.toString())
-                        .replace(
-                            '%gradeImgUrl%', 
-                            chrome.extension.getURL(
-                                'images/grade/%i%gradeactive.png'
-                                    .replace('%i%', i.toString())
-                                )
-                            )
+    chrome.runtime.getBackgroundPage(function(backgroundPage){  
+        var currentGradeInfo = backgroundPage.hosten.gradeForTab["tab" + tab.id];
+        if (currentGradeInfo) {
+            if (currentGradeInfo.grade) {
+                var removeVoteDiv = popup.jQuery(
+                    '<div class="voteimage ungrade"><a title="Ta bort betyg"><img alt="Ta bort betyg" src="' + chrome.extension.getURL('images/grade/nograde.png') + '" /></a></div>' // HACK: Use templating
                     );
+                    popup.jQuery("#vote").append(removeVoteDiv);
+                removeVoteDiv.click(function(){ 
+                    popup.vote('0'); 
+                    backgroundPage.hosten.track("popup", "removeVote");
+                    });
             }
-            else {
-                voteDiv = this.jQuery(
-                    '<div grade="%i%" class="voteimage grade"><img alt="%i%" src="%gradeImgUrl%" /></div>'
-                        .replace('%i%', i.toString())
-                        .replace(
-                            '%gradeImgUrl%', 
-                            chrome.extension.getURL(
-                                'images/grade/%i%grade.png'
-                                    .replace('%i%', i.toString())
+            for (var i = 1; i <= 5; i++) {
+                var voteDiv;
+                if (i == currentGradeInfo.grade) {
+                    voteDiv = popup.jQuery(
+                        '<div grade="%i%" class="voteimage grade"><a title="Betygsätt %i%"><img alt="%i%" src="%gradeImgUrl%" /></a></div>'
+                            .replace('%i%', i.toString())
+                            .replace(
+                                '%gradeImgUrl%', 
+                                chrome.extension.getURL(
+                                    'images/grade/%i%gradeactive.png'
+                                        .replace('%i%', i.toString())
+                                    )
                                 )
-                            )
-                    );
-            }
-            this.jQuery("#vote").append(voteDiv);
-            voteDiv.click(function(){
-                popup.voteFromDiv(this);
-                backgroundPage.hosten.track("popup","vote");
-            });
-        }
-        var wants = false;
-        if (backgroundPage.hosten.wantedList) 
-            wants = backgroundPage.filmtipset
-                .wantedList
-                .some(function(movie){ return currentGradeInfo.id == movie.movie.id; });
-        if (!wants) {
-            var wantedDiv = this.jQuery('<a title="Vill se"><div id="want" class="i18n voteimage want"></div></a>');
-            this.jQuery("#vote").append(wantedDiv);
-            wantedDiv.click(function(){ 
-                popup.want(); 
-                backgroundPage.hosten.track("popup", "addToWantList");
-                return false;
-                });
-            }
-        }
-        var filmtipsetDiv = this.jQuery('<a title="Filmtipsetsida"><div id="filmtipsetpage" class="i18n voteimage filmtipset"></div></a>');
-        filmtipsetDiv.click(function(){
-            backgroundPage.hosten.track("popup", "goToFilmtipsetPage");
-            chrome.tabs.getSelected(
-                null, 
-                function(tab) {
-                    var filmid = backgroundPage.hosten.gradeForTab["tab" + tab.id].id;
-                    backgroundPage.hosten.hidePageActionForTab(
-                        tab.id,
-                        function(){}
                         );
-                    backgroundPage.hosten.createAndSelectTab("http://filmtipset.se/" + filmid);
-                    }
-                );
-            });
-        this.jQuery("#vote").append(filmtipsetDiv);
-        var jQuery = this.jQuery;
-        this.jQuery(".i18n").each(
-            function () {
-                var $elm = jQuery(this);
-                var messageName = $elm.attr("id");
-                var html = chrome.i18n.getMessage(messageName);
-                $elm.html(html);
                 }
-        );
-
+                else {
+                    voteDiv = popup.jQuery(
+                        '<div grade="%i%" class="voteimage grade"><img alt="%i%" src="%gradeImgUrl%" /></div>'
+                            .replace('%i%', i.toString())
+                            .replace(
+                                '%gradeImgUrl%', 
+                                chrome.extension.getURL(
+                                    'images/grade/%i%grade.png'
+                                        .replace('%i%', i.toString())
+                                    )
+                                )
+                        );
+                }
+                popup.jQuery("#vote").append(voteDiv);
+                voteDiv.click(function(){
+                    popup.voteFromDiv(popup);
+                    backgroundPage.hosten.track("popup","vote");
+                });
+            }
+            var wants = false;
+            if (backgroundPage.hosten.wantedList) 
+                wants = backgroundPage.filmtipset
+                    .wantedList
+                    .some(function(movie){ return currentGradeInfo.id == movie.movie.id; });
+            if (!wants) {
+                var wantedDiv = popup.jQuery('<a title="Vill se"><div id="want" class="i18n voteimage want"></div></a>');
+                popup.jQuery("#vote").append(wantedDiv);
+                wantedDiv.click(function(){ 
+                    popup.want(); 
+                    backgroundPage.hosten.track("popup", "addToWantList");
+                    return false;
+                    });
+                }
+            }
+            var filmtipsetDiv = popup.jQuery('<a title="Filmtipsetsida"><div id="filmtipsetpage" class="i18n voteimage filmtipset"></div></a>');
+            filmtipsetDiv.click(function(){
+                backgroundPage.hosten.track("popup", "goToFilmtipsetPage");
+                chrome.tabs.getSelected(
+                    null, 
+                    function(tab) {
+                        var filmid = backgroundPage.hosten.gradeForTab["tab" + tab.id].id;
+                        backgroundPage.hosten.hidePageActionForTab(
+                            tab.id,
+                            function(){}
+                            );
+                        backgroundPage.hosten.createAndSelectTab("http://filmtipset.se/" + filmid);
+                        }
+                    );
+                });
+            popup.jQuery("#vote").append(filmtipsetDiv);
+            var jQuery = popup.jQuery;
+            popup.jQuery(".i18n").each(
+                function () {
+                    var $elm = jQuery(this);
+                    var messageName = $elm.attr("id");
+                    var html = chrome.i18n.getMessage(messageName);
+                    $elm.html(html);
+                    }
+            );
+        });
     };
 
 FilmtipsetExtension.Popup.prototype.voteFromDiv = function(div){
@@ -113,7 +113,7 @@ FilmtipsetExtension.Popup.prototype.want = function() {
     chrome.tabs.getSelected(
         null, 
         function(tab) {
-            var backgroundPage = chrome.extension.getBackgroundPage(); // HACK
+            var backgroundPage = chrome.runtime.getBackgroundPage(); // TODO
             backgroundPage.hosten.hidePageActionForTab(
                 tab.id,
                 function() {
@@ -166,7 +166,7 @@ FilmtipsetExtension.Popup.prototype.hideAndGrade = function(tab, grade) {
 };
 
 FilmtipsetExtension.Popup.prototype.doGrade = function(tab, grade) {
-    var backgroundPage = chrome.extension.getBackgroundPage(); // HACK?
+    var backgroundPage = chrome.runtime.getBackgroundPage(); // TODO
     var currentGradeInfo = backgroundPage.hosten.gradeForTab["tab" + tab.id];
     var cache = backgroundPage.hosten.cache;
     var film = new FilmtipsetExtension.FilmtipsetApi(
@@ -184,7 +184,7 @@ FilmtipsetExtension.Popup.prototype.doGrade = function(tab, grade) {
 };
 
 FilmtipsetExtension.Popup.prototype.updatePageAction = function(gradeResult, tab, film) {
-    var backgroundPage = chrome.extension.getBackgroundPage(); // HACK
+    var backgroundPage = chrome.runtime.getBackgroundPage(); // TODO
     var gradeInfo = film.getGradeInfoMovie(gradeResult);
     backgroundPage.hosten.gradeForTab["tab" + tab.id] = gradeInfo;
     var common = new FilmtipsetExtension.Common();
