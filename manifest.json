@@ -50,6 +50,7 @@
         "images/pageactions/unknown.png"
     ],
     "description": "__MSG_extensionDescription__",
+    "homepage_url": "https://github.com/tomten/filmtipset-chrome-extension",    
     "default_locale": "sv",
     "icons": { 
         "48": "images/icons/48.png",
@@ -68,7 +69,7 @@
         ]
     },
     "page_action": {
-        "default_icon": "images/pageactions/unknown.png",
+        "default_icon": "images/icons/48.png",
         "default_popup": "extension-pages/grade.html"
     },
     "options_page": "extension-pages/personal.html",
