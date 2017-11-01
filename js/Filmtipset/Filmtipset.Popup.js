@@ -113,44 +113,45 @@ FilmtipsetExtension.Popup.prototype.want = function() {
     chrome.tabs.getSelected(
         null, 
         function(tab) {
-            var backgroundPage = chrome.runtime.getBackgroundPage(); // TODO
-            backgroundPage.hosten.hidePageActionForTab(
-                tab.id,
-                function() {
-                    var currentGradeInfo = backgroundPage.hosten.gradeForTab["tab" + tab.id];
-                    var cache = backgroundPage.hosten.cache;
-                    var film = new FilmtipsetExtension.FilmtipsetApi(
-                        localStorage.accessKey, 
-                        localStorage.userKey, 
-                        cache,
-                        null // no need for logger here
-                        );
-                    film.addToWantedListForFilmtipsetId(
-                        currentGradeInfo.id, 
-                        function() {
-                            film.getWantedList(
-                                function(getWantedListResult) {
-                                    backgroundPage.hosten.wantedList = getWantedListResult;
-                                    var gradeInfo = backgroundPage.hosten.gradeForTab["tab" + tab.id];
-                                    var common = new FilmtipsetExtension.Common();
-                                    var iconUrl = common.getIconFromGradeInfo(gradeInfo);
-                                    var title = common.getTitleFromGradeInfo(gradeInfo);
-                                    backgroundPage.hosten.showPageActionForTab(
-                                        iconUrl, 
-                                        title,
-                                        tab.id, 
-                                        function() {
-                                            window.close();
-                                        }
-                                    );
-                                }    
+            chrome.runtime.getBackgroundPage(function(backgroundPage){ 
+                backgroundPage.hosten.hidePageActionForTab(
+                    tab.id,
+                    function() {
+                        var currentGradeInfo = backgroundPage.hosten.gradeForTab["tab" + tab.id];
+                        var cache = backgroundPage.hosten.cache;
+                        var film = new FilmtipsetExtension.FilmtipsetApi(
+                            localStorage.accessKey, 
+                            localStorage.userKey, 
+                            cache,
+                            null // no need for logger here
                             );
-                        }
-                    );
-                }
-            );
-        }
-    );
+                        film.addToWantedListForFilmtipsetId(
+                            currentGradeInfo.id, 
+                            function() {
+                                film.getWantedList(
+                                    function(getWantedListResult) {
+                                        backgroundPage.hosten.wantedList = getWantedListResult;
+                                        var gradeInfo = backgroundPage.hosten.gradeForTab["tab" + tab.id];
+                                        var common = new FilmtipsetExtension.Common();
+                                        var iconUrl = common.getIconFromGradeInfo(gradeInfo);
+                                        var title = common.getTitleFromGradeInfo(gradeInfo);
+                                        backgroundPage.hosten.showPageActionForTab(
+                                            iconUrl, 
+                                            title,
+                                            tab.id, 
+                                            function() {
+                                                window.close(); // HACK?
+                                            }
+                                        );
+                                    }    
+                                );
+                            }
+                        );
+                    }
+                );
+            }
+       );
+    });
 };
 
 FilmtipsetExtension.Popup.prototype.vote = function(grade) {
@@ -166,34 +167,36 @@ FilmtipsetExtension.Popup.prototype.hideAndGrade = function(tab, grade) {
 };
 
 FilmtipsetExtension.Popup.prototype.doGrade = function(tab, grade) {
-    var backgroundPage = chrome.runtime.getBackgroundPage(); // TODO
-    var currentGradeInfo = backgroundPage.hosten.gradeForTab["tab" + tab.id];
-    var cache = backgroundPage.hosten.cache;
-    var film = new FilmtipsetExtension.FilmtipsetApi(
-        localStorage.accessKey, 
-        localStorage.userKey, 
-        cache,
-        null // no need for logger here
-        );
     var popup = this;
-    film.gradeForFilmtipsetId(
-        currentGradeInfo.id, 
-        grade,  
-        function(gradeResult) { popup.updatePageAction(gradeResult, tab, film); }
-    );
+    chrome.runtime.getBackgroundPage(function(backgroundPage){ 
+        var currentGradeInfo = backgroundPage.hosten.gradeForTab["tab" + tab.id];
+        var cache = backgroundPage.hosten.cache;
+        var film = new FilmtipsetExtension.FilmtipsetApi(
+            localStorage.accessKey, 
+            localStorage.userKey, 
+            cache,
+            null // no need for logger here
+            );
+        film.gradeForFilmtipsetId(
+            currentGradeInfo.id, 
+            grade,  
+            function(gradeResult) { popup.updatePageAction(gradeResult, tab, film); }
+        );
+    });
 };
 
 FilmtipsetExtension.Popup.prototype.updatePageAction = function(gradeResult, tab, film) {
-    var backgroundPage = chrome.runtime.getBackgroundPage(); // TODO
     var gradeInfo = film.getGradeInfoMovie(gradeResult);
-    backgroundPage.hosten.gradeForTab["tab" + tab.id] = gradeInfo;
-    var common = new FilmtipsetExtension.Common();
-    var iconUrl = common.getIconFromGradeInfo(gradeInfo);
-    var title = common.getTitleFromGradeInfo(gradeInfo);
-    backgroundPage.hosten.showPageActionForTab(
-        iconUrl, 
-        title,
-        tab.id, 
-        function() { window.close(); } // HACK
-    );
+    chrome.runtime.getBackgroundPage(function(backgroundPage){ 
+        backgroundPage.hosten.gradeForTab["tab" + tab.id] = gradeInfo;
+        var common = new FilmtipsetExtension.Common();
+        var iconUrl = common.getIconFromGradeInfo(gradeInfo);
+        var title = common.getTitleFromGradeInfo(gradeInfo);
+        backgroundPage.hosten.showPageActionForTab(
+            iconUrl, 
+            title,
+            tab.id, 
+            function() { window.close(); } // HACK
+        );
+    });
 };
