@@ -21,7 +21,7 @@ FilmtipsetExtension.Links.jquery_imdb_link_selector = 'a:regex(href, (www\\.)?im
 FilmtipsetExtension.Links.jquery_imdb_link_selector_on_imdb = 'a:regex(href, ^\\/title\\/tt(\\d+)\\/?$)';    
 
 /** @const */
-FilmtipsetExtension.Links.jquery_imdb_link_selector_on_google_movies = '.showtimes .movie > .name > a';    
+FilmtipsetExtension.Links.jquery_movie_title_selector_on_google_movies = '.kltat';    
 
 /** @const */
 FilmtipsetExtension.Links.popover_html_template = '<a style="float:right;" href="%url%"><img style="padding-left:10px;" src="%imgUrl%" /></a>%title%<br/><br/>%description%<br style="clear:both;" clear="both" />';
@@ -32,9 +32,9 @@ FilmtipsetExtension.Links.progress_html =
         chrome.i18n.getMessage('progressHtml') +
     '</div>';
 
-/** Filmtipsifies movie links on Google Movies */    
+/** Filmtipsifies movie title elements on Google Movies */    
 FilmtipsetExtension.Links.prototype.processLinksOnGoogleMovies = function(){
-    this.processLinksInternal(FilmtipsetExtension.Links.jquery_imdb_link_selector_on_google_movies);
+    this.processTitlesInternal(FilmtipsetExtension.Links.jquery_movie_title_selector_on_google_movies);
     };
 
 /** Filmtipsifies internal IMDB links on IMDB */    
@@ -100,6 +100,44 @@ FilmtipsetExtension.Links.prototype.handleResponse = function(contentScriptReque
         }
     };    
     
+    FilmtipsetExtension.Links.prototype.processTitlesInternal = function(link_selector){
+        // TODO: DRY
+        var self = this;
+        if (self.running) 
+            return;
+        self.running = true;
+        self.$links = self.jQuery(link_selector).not('[filmtipsified]'); // collect all unprocessed links to follow
+        if (self.$links.length > 0) { // are there any links to follow?
+            self.linkProcessingPort = chrome.runtime.connect(); // setup the port used to communicate with the event page
+            self.linkProcessingPort.onMessage.addListener(
+                /**
+                 * @param {FilmtipsetExtension.ContentScriptRequestCallback} contentScriptRequestCallback
+                 */
+                function(contentScriptRequestCallback){
+                    self.handleResponse.call(self, contentScriptRequestCallback); // TODO: is .call() necessary?
+                }); // setup the response handler for the port
+            
+            if (self.jQuery("#filmtipsetImdbLinks").length === 0)
+                self.jQuery("body").append(
+                    FilmtipsetExtension.Links.progress_html
+                        .replace(
+                            "%remsaUrl%", 
+                            chrome.extension.getURL("images/progress.png")
+                            )
+                    );
+                    
+            self.jQuery("#filmLinkCount").html(self.$links.length);
+            
+            self.jQuery("#filmtipsetImdbLinks")
+                //.hide() // Hide the progress bar and...
+                .delay(3000) // ...wait 3 seconds before...
+                .slideDown(500, "linear", function(){}); // ...showing it (to avoid it showing it at all if possible)
+            self.processOneTitle(0);
+            }
+        else // no links to follow?            
+            self.running = false;
+        };    
+
 /** 
  Filmtipsifies links using the specified link selector
  @param {string} link_selector jQuery link selector
@@ -141,6 +179,20 @@ FilmtipsetExtension.Links.prototype.processLinksInternal = function(link_selecto
 	else 
 		this.running = false;
     };
+
+FilmtipsetExtension.Links.prototype.processOneTitle = function(currentLinkNumber){
+    // TODO: DRY
+    var self = this;
+    var $a = this.jQuery(this.$links[currentLinkNumber]);
+    var title = $a.text();
+    self.linkProcessingPort.postMessage(
+        new FilmtipsetExtension.GradeForSearchRequest(
+            title,
+            currentLinkNumber.toString()
+            )
+        );
+    }
+
 
 /**
  @param {number} currentLinkNumber Link number to process

@@ -74,7 +74,7 @@
     "options_page": "extension-pages/personal.html",
     "content_scripts": [
         {
-            "matches": [ "http://*.google.se/movies?*", "https://*.google.se/movies?*" ],
+            "matches": [ "http://*.google.se/search?q=movies*", "https://*.google.se/search?q=movies*" ],
             "js": [ 
                 "content-scripts/jquery-3.2.1.min.js",
                 "content-scripts/jquery.regex.js", 
