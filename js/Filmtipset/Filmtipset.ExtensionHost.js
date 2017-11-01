@@ -12,7 +12,7 @@ FilmtipsetExtension.ExtensionHost = function(window, debug){
         -1, // Maximum size of cache = maximum size of storage medium 
         this.debug, // Debug?
         new Cache.LocalStorageCacheStorage("filmtipset2.15")); // Use this extension's Local Storage for persisting the cache
-    // TODO: When to clear out obsolete caches?
+    // TODO: Clear out obsolete caches (every Storage except the one used above)
     this.gradeForTab = {}; // Session-scoped storage for the current page action grades for different browser tabs
     this.wantedList = undefined; // Session-scoped storage for items in the user's Filmtipset Wanted List
     };
@@ -62,6 +62,7 @@ FilmtipsetExtension.ExtensionHost.prototype.showPageActionForTab = function(
     chrome.pageAction.show(tabId);
     chrome.pageAction.setIcon({ tabId: tabId, path: iconUrl });
     chrome.pageAction.setTitle({ tabId: tabId, title: title });
+    chrome.pageAction.setPopup({ tabId: tabId, popup: "extension-pages/grade.html" }); // TODO
     callback();
     };
 
@@ -70,6 +71,7 @@ FilmtipsetExtension.ExtensionHost.prototype.hidePageActionForTab = function(
         callback
         ) {            
     chrome.pageAction.hide(tabId);
+    chrome.pageAction.setPopup({ tabId: tabId, popup: "" }); // HACK: Is this needed?
     callback();
     };
 
