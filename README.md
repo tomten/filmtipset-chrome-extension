@@ -7,6 +7,7 @@ Version 2.15, November 2017:
 
  - UI fixes to align with Chrome version 49(?) extension changes (see link). Changed default "question mark" icon into something more intuitive. https://groups.google.com/a/chromium.org/forum/#!searchin/chromium-extensions/upcoming/chromium-extensions/7As9MKhav5E/dNiZDoSCCQAJ
  - Pop-up no longer stops working intermittently, hopefully. Stopped treating extension background page as persistent.
+ - Adding a movie to the want-to-see-list from the pop-up works now.
  - Pop-up more intuitive, maybe
  - Google Movies support for Sweden again, to replace Google Showtimes support (Google Showtimes was discontinued on 2016-11-01).  
  - jQuery 3 instead of 2

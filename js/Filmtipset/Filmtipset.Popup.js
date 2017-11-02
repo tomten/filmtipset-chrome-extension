@@ -32,12 +32,12 @@ FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
                 if (i == currentGradeInfo.grade) {
                     voteDiv = popup.jQuery(
                         '<div grade="%i%" class="voteimage grade"><a title="Betygsätt %i%"><img alt="%i%" src="%gradeImgUrl%" /></a></div>'
-                            .replace('%i%', i.toString())
+                            .replace(/%i%/g, i.toString())
                             .replace(
                                 '%gradeImgUrl%', 
                                 chrome.extension.getURL(
                                     'images/grade/%i%gradeactive.png'
-                                        .replace('%i%', i.toString())
+                                        .replace(/%i%/g, i.toString())
                                     )
                                 )
                         );
@@ -45,27 +45,30 @@ FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
                 else {
                     voteDiv = popup.jQuery(
                         '<div grade="%i%" class="voteimage grade"><img alt="%i%" src="%gradeImgUrl%" /></div>'
-                            .replace('%i%', i.toString())
+                            .replace(/%i%/g, i.toString())
                             .replace(
                                 '%gradeImgUrl%', 
                                 chrome.extension.getURL(
                                     'images/grade/%i%grade.png'
-                                        .replace('%i%', i.toString())
+                                        .replace(/%i%/g, i.toString())
                                     )
                                 )
                         );
                 }
                 popup.jQuery("#vote").append(voteDiv);
                 voteDiv.click(function(){
-                    popup.voteFromDiv(popup);
+                    popup.voteFromDiv(this);
                     backgroundPage.hosten.track("popup","vote");
                 });
             }
             var wants = false;
             if (backgroundPage.hosten.wantedList) 
-                wants = backgroundPage.filmtipset
+                wants = backgroundPage
+                    .hosten
                     .wantedList
-                    .some(function(movie){ return currentGradeInfo.id == movie.movie.id; });
+                    .some(function(movie){ 
+                        return currentGradeInfo.id == movie.id; 
+                    });
             if (!wants) {
                 var wantedDiv = popup.jQuery('<a title="Vill se"><div id="want" class="i18n voteimage want"></div></a>');
                 popup.jQuery("#vote").append(wantedDiv);
@@ -77,6 +80,7 @@ FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
                 }
             }
             var filmtipsetDiv = popup.jQuery('<a title="Filmtipsetsida"><div id="filmtipsetpage" class="i18n voteimage filmtipset"></div></a>');
+            popup.jQuery("#vote").append(filmtipsetDiv);
             filmtipsetDiv.click(function(){
                 backgroundPage.hosten.track("popup", "goToFilmtipsetPage");
                 chrome.tabs.getSelected(
@@ -91,11 +95,9 @@ FilmtipsetExtension.Popup.prototype.showGradeButtons = function(tab) {
                         }
                     );
                 });
-            popup.jQuery("#vote").append(filmtipsetDiv);
-            var jQuery = popup.jQuery;
             popup.jQuery(".i18n").each(
                 function () {
-                    var $elm = jQuery(this);
+                    var $elm = popup.jQuery(this);
                     var messageName = $elm.attr("id");
                     var html = chrome.i18n.getMessage(messageName);
                     $elm.html(html);
