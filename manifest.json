@@ -4,7 +4,7 @@
     "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
     "name": "__MSG_extensionName__",
     "short_name": "__MSG_extensionShortName__",
-    "version": "2.14",
+    "version": "2.15",
     "web_accessible_resources": [  
         "extension-pages/filmtipset.html.js",
         "extension-pages/grade.html.js",
@@ -19,8 +19,8 @@
         "js/Filmtipset/Filmtipset.ContentScriptRequest.js",
         "js/Filmtipset/Filmtipset.FilmtipsetApi.js",
         "js/Filmtipset/Filmtipset.Imdb.js",
-        "content-scripts/jquery-2.0.3.min.js",
-        "content-scripts/jquery-2.0.3.min.map",
+        "content-scripts/jquery-3.2.1.min.js",
+        "content-scripts/jquery-3.2.1.min.map",
         "content-scripts/jquery.regex.js",
         "content-scripts/jquery.tipTip.minified.js",
         "js/Filmtipset/Filmtipset.Links.js",
@@ -50,6 +50,7 @@
         "images/pageactions/unknown.png"
     ],
     "description": "__MSG_extensionDescription__",
+    "homepage_url": "https://github.com/tomten/filmtipset-chrome-extension",    
     "default_locale": "sv",
     "icons": { 
         "48": "images/icons/48.png",
@@ -68,15 +69,14 @@
         ]
     },
     "page_action": {
-        "default_icon": "images/pageactions/unknown.png",
-        "default_popup": "extension-pages/grade.html"
+        "default_icon": "images/icons/48.png"
     },
     "options_page": "extension-pages/personal.html",
     "content_scripts": [
         {
-            "matches": [ "http://*.google.se/movies?*", "https://*.google.se/movies?*" ],
+            "matches": [ "http://*.google.se/*q=movies*", "https://*.google.se/*q=movies*" ],
             "js": [ 
-                "content-scripts/jquery-2.0.3.min.js",
+                "content-scripts/jquery-3.2.1.min.js",
                 "content-scripts/jquery.regex.js", 
                 "content-scripts/jquery.tipTip.minified.js", 
                 "js/Filmtipset/Filmtipset.js",
@@ -90,7 +90,7 @@
         {
             "matches": [ "http://*.imdb.com/*", "https://*.imdb.com/*" ],
             "js": [ 
-                "content-scripts/jquery-2.0.3.min.js",
+                "content-scripts/jquery-3.2.1.min.js",
                 "content-scripts/jquery.regex.js", 
                 "content-scripts/jquery.tipTip.minified.js", 
                 "js/Filmtipset/Filmtipset.js",
@@ -107,7 +107,7 @@
             "exclude_matches": [ "http://*.imdb.com/*", "https://*.imdb.com/*", "http://*.google.se/movies?*", "https://*.google.se/movies?*" ],
             "css": [ "content-scripts/other.css", "content-scripts/tipTip.css" ],
             "js": [ 
-                "content-scripts/jquery-2.0.3.min.js",
+                "content-scripts/jquery-3.2.1.min.js",
                 "content-scripts/jquery.regex.js", 
                 "content-scripts/jquery.tipTip.minified.js", 
                 "js/Filmtipset/Filmtipset.js", 

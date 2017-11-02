@@ -274,7 +274,7 @@ Date.prototype.addDays = function(days)
 };    
     
 /**
- * Find movies whose original or Swedish titles exactly match a query.
+ * Find movies whose original or Swedish title or alternative titles exactly match a query.
  * @param {string} query Query to search for. 
  * @param {function(Array)} callback Function to run upon completion. 
  *     Input parameter to function will be array of Filmtipset Movies.
@@ -286,10 +286,17 @@ FilmtipsetExtension.FilmtipsetApi.prototype.searchExact = function(
     this.search(
         query, 
         function(results){
-            var exactResults = results.filter(function(result){
+            var exactResults = results.filter(function(result) {
                 var isExactResult = 
                     result.orgname == query ||
-                    result.name == query; // TODO: Search alt_title.split(',') as well?                       
+                    result.name == query ||
+                    (
+                        (result.alt_title || "")
+                            .split(',')
+                            .some(function(alt_tit) { 
+                                return alt_tit == query; 
+                            })
+                    );
                 return isExactResult;
                 });
             callback(exactResults);
@@ -347,7 +354,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getInfoForImdbId = function(
 /**
  * Determines the grade and grade type for a Filmtipset Movie Info Response.
  * @param {?} json Filmtipset Movie Info Response
- * @return {(FilmtipsetExtension.GradeInfo|null)} Object with .grade, .type and .id for movie. 
+ * @return {FilmtipsetExtension.GradeInfo} Object with .grade, .type and .id for movie. 
  *     Or null on error.
  */
 FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfo = function(json) {
@@ -372,7 +379,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfo = function(json) {
 /**
  * Determines the grade and grade type for a Filmtipset Movie.
  * @param {?} movie Filmtipset Movie 
- * @return {(FilmtipsetExtension.GradeInfo|null)} Object with .grade, .type and .id for movie.
+ * @return {FilmtipsetExtension.GradeInfo} Object with .grade, .type and .id for movie.
  *     Or null on error.
  */
 FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfoMovie = function(movie) { 
@@ -385,12 +392,7 @@ FilmtipsetExtension.FilmtipsetApi.prototype.getGradeInfoMovie = function(movie) 
         if (grade) {
             var gradevalue = grade.value; // null, "1", "2", "3", "4", "5"
             var gradetype = grade.type; // "none", "seen", "calculated"
-            var gradeAndType = 
-            {
-                "grade": gradevalue,
-                "type": gradetype,
-                "id": id
-            };
+            var gradeAndType = new FilmtipsetExtension.GradeInfo(gradetype, gradevalue, id);
             return gradeAndType;
             } 
             else {

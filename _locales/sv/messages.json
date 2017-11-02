@@ -10,8 +10,8 @@
 	"welcomeHtml": { "message": "<h1>Välkommen!</h1>För att använda detta tillägg <b>måste du <a target='filmtipset' href='http://www.filmtipset.se/api.cgi?keys=1'>skapa en personlig nyckel via Filmtipset</a></b> så att du kan få rekommendationer och sätta betyg. Fyll sedan i denna nyckel nedan. Nyckeln ska skapas för <b>pbolmsteds Chrome extension</b>" },
 	"accessKeyLabel": { "message": "Filmtipset API access key" },
 	"userKeyLabel": { "message": "Nyckel" },
-	"want": { "message": "Vill se" },
-	"filmtipsetpage": { "message": "Filmtipsetsida" },
+	"want": { "message": "Lägg till i 'vill se'-listan" },
+	"filmtipsetpage": { "message": "Gå till Filmtipset-sidan" },
 	"invalidApiKey": { "message": "Felaktig API-nyckel från Mina Sidor på Filmtipset! Kontrollera att du matat in exakt rätt!" },
     "progressHtml": { "message": "Hämtar filmtips för <span id='filmLinkCount'> %linkCount% </span> filmer..." }
 }

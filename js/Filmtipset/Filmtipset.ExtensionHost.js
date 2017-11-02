@@ -3,7 +3,7 @@
 /**
  * @constructor
  * @param {Window} window Reference to background page window. Used for getting a reference to he Google Analytics Async Queue which is used for event tracking.
- * @debug Run in debug mode?
+ * @param {Boolean} debug Run in debug mode?
  */
 FilmtipsetExtension.ExtensionHost = function(window, debug){
     this.window = window;        
@@ -11,8 +11,8 @@ FilmtipsetExtension.ExtensionHost = function(window, debug){
     this.cache = new Cache(
         -1, // Maximum size of cache = maximum size of storage medium 
         this.debug, // Debug?
-        new Cache.LocalStorageCacheStorage("filmtipset2.14")); // Use this extension's Local Storage for persisting the cache
-    // TODO: When to clear out obsolete caches?
+        new Cache.LocalStorageCacheStorage("filmtipset2.15")); // Use this extension's Local Storage for persisting the cache
+    // TODO: Clear out obsolete caches (every Storage except the one used above)
     this.gradeForTab = {}; // Session-scoped storage for the current page action grades for different browser tabs
     this.wantedList = undefined; // Session-scoped storage for items in the user's Filmtipset Wanted List
     };
@@ -62,6 +62,7 @@ FilmtipsetExtension.ExtensionHost.prototype.showPageActionForTab = function(
     chrome.pageAction.show(tabId);
     chrome.pageAction.setIcon({ tabId: tabId, path: iconUrl });
     chrome.pageAction.setTitle({ tabId: tabId, title: title });
+    chrome.pageAction.setPopup({ tabId: tabId, popup: "extension-pages/grade.html" }); // TODO
     callback();
     };
 
@@ -70,9 +71,15 @@ FilmtipsetExtension.ExtensionHost.prototype.hidePageActionForTab = function(
         callback
         ) {            
     chrome.pageAction.hide(tabId);
+    chrome.pageAction.setPopup({ tabId: tabId, popup: "" }); // HACK: Is this needed?
     callback();
     };
 
+/**
+ * Activates the extension for a page on IMDB.
+ * @param {string} tabId Current browser tab ID.
+ * @param {string} imdbId IMDB movie ID. 
+ */
 FilmtipsetExtension.ExtensionHost.prototype.activateImdbPage = function(
         tabId, 
         imdbId
@@ -83,17 +90,17 @@ FilmtipsetExtension.ExtensionHost.prototype.activateImdbPage = function(
         this.cache, 
         this.log
         );
-    var tips = this;
+    var self = this;
     film.getInfoForImdbId(
         imdbId,
         /** @param {Object} movieInfo Filmtipset movie info. */
         function(movieInfo) {
             var gradeInfo = film.getGradeInfoMovie(movieInfo);
-            tips.gradeForTab["tab" + tabId] = gradeInfo;
+            self.gradeForTab["tab" + tabId] = gradeInfo;
             var common = new FilmtipsetExtension.Common();
             var iconUrl = common.getIconFromGradeInfo(gradeInfo);
             var title = common.getTitleFromGradeInfo(gradeInfo);
-            tips.showPageActionForTab(
+            self.showPageActionForTab(
                 iconUrl, 
                 title, 
                 tabId, 
@@ -182,7 +189,7 @@ FilmtipsetExtension.ExtensionHost.prototype.initializeMessageListener = function
     var self = this;
     // for complex messaging, use a port
     chrome.runtime.onConnect.addListener(
-        /** @param {chrome.runtime.Port} port */
+        /** @param {Object} port */
         function(port) {
             self.log("Content script connected");
             port.onDisconnect.addListener(function() { self.log("Content script disconnected"); });
