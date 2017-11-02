@@ -274,7 +274,7 @@ Date.prototype.addDays = function(days)
 };    
     
 /**
- * Find movies whose original or Swedish titles exactly match a query.
+ * Find movies whose original or Swedish title or alternative titles exactly match a query.
  * @param {string} query Query to search for. 
  * @param {function(Array)} callback Function to run upon completion. 
  *     Input parameter to function will be array of Filmtipset Movies.
@@ -286,10 +286,17 @@ FilmtipsetExtension.FilmtipsetApi.prototype.searchExact = function(
     this.search(
         query, 
         function(results){
-            var exactResults = results.filter(function(result){
+            var exactResults = results.filter(function(result) {
                 var isExactResult = 
                     result.orgname == query ||
-                    result.name == query; // TODO: Search alt_title.split(',') as well?                       
+                    result.name == query ||
+                    (
+                        (result.alt_title || "")
+                            .split(',')
+                            .some(function(alt_tit) { 
+                                return alt_tit == query; 
+                            })
+                    );
                 return isExactResult;
                 });
             callback(exactResults);
