@@ -1,6 +1,15 @@
 filmtipset-chrome-extension
 ===========================
 
+Update September 2019
+---------------------
+
+This extension doesn't work anymore since Filmtipset doesn't have an API anymore. 
+
+
+Obsolete information:
+---------------------
+
 Chrome Extension for Filmtipset movie site. Released version available in Chrome Web Store: https://chrome.google.com/webstore/detail/filmtipset/faajjfnpkdjpceeodjnmhdphbgehjeji
 
 Version 2.15, November 2017:
