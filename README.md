@@ -4,7 +4,7 @@ filmtipset-chrome-extension
 Update September 2019
 ---------------------
 
-This extension doesn't work anymore since Filmtipset doesn't have an API anymore. 
+This extension doesn't work anymore since Filmtipset doesn't have an API anymore. The extension has been unpublished from the Chrome Web Store. 
 
 
 Obsolete information:
